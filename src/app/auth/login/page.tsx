@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '../../lib/supabase'
+import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function Login() {
@@ -16,7 +16,10 @@ export default function Login() {
     setCarregando(true)
     setErro('')
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    })
 
     if (error) {
       setErro('E-mail ou senha incorretos.')
@@ -24,101 +27,99 @@ export default function Login() {
       return
     }
 
-    router.push('/')
-    router.refresh()
+    // Força reload completo para o middleware pegar os cookies
+    window.location.href = '/'
   }
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0A0A0A',
+      background: '#F4F2ED',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontFamily: 'sans-serif'
+      fontFamily: "'Space Grotesk', sans-serif",
     }}>
       <div style={{
-        background: '#17191C',
-        border: '1px solid #252830',
-        borderRadius: '4px',
+        background: '#fff',
+        border: '1px solid #E4E2DC',
+        borderRadius: 6,
         padding: '48px',
         width: '100%',
-        maxWidth: '400px'
+        maxWidth: '400px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
       }}>
-        <h1 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: '32px',
-          color: '#C9A84C',
-          marginBottom: '8px',
-          letterSpacing: '0.08em'
-        }}>BARBEROS</h1>
-        <p style={{ color: '#7A7F8A', fontSize: '14px', marginBottom: '40px' }}>
+        <div style={{
+          fontFamily: 'monospace',
+          fontSize: 22,
+          fontWeight: 700,
+          color: '#B8860B',
+          letterSpacing: '0.08em',
+          marginBottom: 6,
+        }}>BARBEROS</div>
+        <p style={{ color: '#9A9890', fontSize: 13, marginBottom: 36 }}>
           Acesse sua conta
         </p>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', color: '#7A7F8A', fontSize: '12px', letterSpacing: '0.1em', marginBottom: '8px' }}>
-            E-MAIL
-          </label>
+        <div style={{ marginBottom: 18 }}>
+          <label style={{
+            display: 'block', fontFamily: 'monospace',
+            fontSize: 10, letterSpacing: '0.15em',
+            color: '#9A9890', textTransform: 'uppercase', marginBottom: 6,
+          }}>E-MAIL</label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             style={{
-              width: '100%',
-              padding: '12px 16px',
-              background: '#0A0A0A',
-              border: '1px solid #252830',
-              borderRadius: '2px',
-              color: '#F0EDE8',
-              fontSize: '14px',
-              outline: 'none',
-              boxSizing: 'border-box'
+              width: '100%', padding: '10px 14px',
+              background: '#FAFAF7', border: '1px solid #E0DED8',
+              borderRadius: 3, color: '#1A1A22', fontSize: 14,
+              outline: 'none', boxSizing: 'border-box',
+              fontFamily: "'Space Grotesk', sans-serif",
             }}
           />
         </div>
 
-        <div style={{ marginBottom: '32px' }}>
-          <label style={{ display: 'block', color: '#7A7F8A', fontSize: '12px', letterSpacing: '0.1em', marginBottom: '8px' }}>
-            SENHA
-          </label>
+        <div style={{ marginBottom: 28 }}>
+          <label style={{
+            display: 'block', fontFamily: 'monospace',
+            fontSize: 10, letterSpacing: '0.15em',
+            color: '#9A9890', textTransform: 'uppercase', marginBottom: 6,
+          }}>SENHA</label>
           <input
             type="password"
             value={senha}
             onChange={e => setSenha(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
             style={{
-              width: '100%',
-              padding: '12px 16px',
-              background: '#0A0A0A',
-              border: '1px solid #252830',
-              borderRadius: '2px',
-              color: '#F0EDE8',
-              fontSize: '14px',
-              outline: 'none',
-              boxSizing: 'border-box'
+              width: '100%', padding: '10px 14px',
+              background: '#FAFAF7', border: '1px solid #E0DED8',
+              borderRadius: 3, color: '#1A1A22', fontSize: 14,
+              outline: 'none', boxSizing: 'border-box',
+              fontFamily: "'Space Grotesk', sans-serif",
             }}
           />
         </div>
 
         {erro && (
-          <p style={{ color: '#E05252', fontSize: '13px', marginBottom: '20px' }}>{erro}</p>
+          <p style={{
+            color: '#DC2626', fontSize: 12,
+            marginBottom: 16, fontFamily: 'monospace',
+          }}>{erro}</p>
         )}
 
         <button
           onClick={handleLogin}
           disabled={carregando}
           style={{
-            width: '100%',
-            padding: '14px',
-            background: carregando ? '#7A7F8A' : '#C9A84C',
-            border: 'none',
-            borderRadius: '2px',
-            color: '#0A0A0A',
-            fontSize: '14px',
-            fontWeight: '600',
-            letterSpacing: '0.1em',
-            cursor: carregando ? 'not-allowed' : 'pointer'
+            width: '100%', padding: '12px',
+            background: carregando ? '#C0BEB8' : '#B8860B',
+            border: 'none', borderRadius: 3,
+            color: '#fff', fontSize: 12,
+            fontFamily: 'monospace', fontWeight: 700,
+            letterSpacing: '0.12em', cursor: carregando ? 'not-allowed' : 'pointer',
+            transition: 'background 0.15s',
           }}
         >
           {carregando ? 'ENTRANDO...' : 'ENTRAR'}
