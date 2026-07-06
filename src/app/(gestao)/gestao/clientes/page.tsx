@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 interface Cliente {
@@ -11,7 +10,6 @@ interface Cliente {
   telefone: string | null
   pontos: number
   criado_em: string
-  perfil: { nome: string; telefone: string } | null
 }
 
 export default function ClientesPage() {
@@ -29,7 +27,7 @@ export default function ClientesPage() {
     setCarregando(true)
     const { data } = await supabase
       .from('clientes')
-      .select('*, perfil:perfil_id(nome, telefone)')
+      .select('*')
       .order('criado_em', { ascending: false })
     setClientes(data || [])
     setCarregando(false)

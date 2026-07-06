@@ -101,7 +101,7 @@ export default function ConfiguracoesPage() {
         </div>
       </div>
 
-      <div style={{ padding: '24px 28px', maxWidth: 720 }}>
+      <div style={{ padding: '24px 28px', maxWidth: 720, margin: '0 auto' }}>
 
         {/* IDENTIDADE */}
         <div style={cardS}>

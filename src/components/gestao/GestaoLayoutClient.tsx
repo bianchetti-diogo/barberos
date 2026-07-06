@@ -7,7 +7,7 @@ export default function GestaoLayoutClient({ children }: { children: React.React
   const [fixada, setFixada] = useState(false)
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#F4F2ED' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#F4F2ED' }}>
       <Sidebar onFixadaChange={setFixada} />
       <main style={{
         flex: 1,
@@ -15,6 +15,9 @@ export default function GestaoLayoutClient({ children }: { children: React.React
         marginLeft: fixada ? 0 : 56,
         background: '#F4F2ED',
         transition: 'margin-left 0.22s cubic-bezier(0.4,0,0.2,1)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         {children}
       </main>

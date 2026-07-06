@@ -49,7 +49,6 @@ export default function NovoBarbeiroPage() {
     setErro('')
 
     try {
-      // Envia para a API route que usa service role
       const formData = new FormData()
       formData.append('nome', form.nome)
       formData.append('email', form.email)
@@ -90,8 +89,20 @@ export default function NovoBarbeiroPage() {
     textTransform: 'uppercase', display: 'block', marginBottom: 6,
   }
 
+  const cardStyle: React.CSSProperties = {
+    background: '#fff', border: '1px solid #E4E2DC',
+    borderRadius: 4, padding: '24px',
+  }
+
+  const cardTitle: React.CSSProperties = {
+    fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em',
+    color: '#9A9890', textTransform: 'uppercase', marginBottom: 16,
+  }
+
   return (
-    <div style={{ minHeight: '100vh', background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
+
+      {/* HEADER */}
       <div style={{
         padding: '20px 28px', borderBottom: '1px solid #E0DED8',
         background: '#FAFAF7', display: 'flex', alignItems: 'center', gap: 16,
@@ -111,14 +122,13 @@ export default function NovoBarbeiroPage() {
         </div>
       </div>
 
-      <div style={{ padding: '28px', maxWidth: 720 }}>
+      {/* CONTEÚDO CENTRALIZADO */}
+      <div style={{ padding: '24px 28px', maxWidth: 720, margin: '0 auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* FOTO */}
-          <div style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '24px' }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 16 }}>
-              Foto do Barbeiro
-            </div>
+          <div style={cardStyle}>
+            <div style={cardTitle}>Foto do Barbeiro</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
               <div onClick={() => fileRef.current?.click()} style={{
                 width: 80, height: 80, borderRadius: 4,
@@ -145,10 +155,8 @@ export default function NovoBarbeiroPage() {
           </div>
 
           {/* DADOS */}
-          <div style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '24px' }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 20 }}>
-              Dados Pessoais
-            </div>
+          <div style={cardStyle}>
+            <div style={{ ...cardTitle, marginBottom: 20 }}>Dados Pessoais</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Nome completo *</label>
@@ -179,10 +187,8 @@ export default function NovoBarbeiroPage() {
           </div>
 
           {/* ESPECIALIDADES */}
-          <div style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '24px' }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 16 }}>
-              Especialidades
-            </div>
+          <div style={cardStyle}>
+            <div style={cardTitle}>Especialidades</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {ESPECIALIDADES_SUGERIDAS.map(esp => {
                 const selecionado = form.especialidades.includes(esp)

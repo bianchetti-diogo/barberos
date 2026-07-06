@@ -4,45 +4,40 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
-const MENU = [
+const GRUPOS = [
   {
-    secao: null,
+    label: 'Administração',
     itens: [
-      { id: 'dashboard', label: 'Dashboard', icon: '⬡', rota: '/gestao', ativo: true },
-    ]
+      { id: 'dashboard',     label: 'Dashboard',    icon: '⬡', rota: '/gestao',               ativo: true },
+      { id: 'barbeiros',     label: 'Barbeiros',    icon: '✂', rota: '/gestao/barbeiros',      ativo: true },
+      { id: 'servicos',      label: 'Serviços',     icon: '◈', rota: '/gestao/servicos',       ativo: true },
+      { id: 'produtos',      label: 'Produtos',     icon: '◉', rota: '/gestao/produtos',       ativo: true },
+      { id: 'clientes',      label: 'Clientes',     icon: '◎', rota: '/gestao/clientes',       ativo: true },
+      { id: 'configuracoes', label: 'Configurações',icon: '◌', rota: '/gestao/configuracoes',  ativo: true },
+    ],
   },
   {
-    secao: 'Administração',
+    label: 'Operação',
     itens: [
-      { id: 'barbeiros',     label: 'Barbeiros',     icon: '✂', rota: '/gestao/barbeiros',     ativo: true },
-      { id: 'servicos',      label: 'Serviços',      icon: '◈', rota: '/gestao/servicos',      ativo: true },
-      { id: 'produtos',      label: 'Produtos',      icon: '◉', rota: '/gestao/produtos',      ativo: true },
-      { id: 'clientes',      label: 'Clientes',      icon: '◎', rota: '/gestao/clientes',      ativo: true },
-      { id: 'configuracoes', label: 'Configurações', icon: '◌', rota: '/gestao/configuracoes', ativo: true },
-    ]
+      { id: 'agenda',    label: 'Agenda',    icon: '▦', rota: '/gestao/agenda',    ativo: true },
+    ],
   },
   {
-    secao: 'Operação',
+    label: 'Financeiro',
     itens: [
-      { id: 'agenda',        label: 'Agenda',        icon: '▦', rota: '/gestao/agenda',        ativo: false },
-    ]
-  },
-  {
-    secao: 'Financeiro',
-    itens: [
-      { id: 'financeiro',    label: 'Faturamento',   icon: '▣', rota: '/gestao/financeiro',    ativo: false },
-      { id: 'relatorios',    label: 'Relatórios',    icon: '▤', rota: '/gestao/relatorios',    ativo: false },
-    ]
+      { id: 'financeiro', label: 'Faturamento', icon: '◈', rota: '/gestao/financeiro', ativo: false },
+      { id: 'relatorios', label: 'Relatórios',  icon: '▤', rota: '/gestao/relatorios', ativo: false },
+    ],
   },
 ]
 
-export default function Sidebar({ onFixadaChange }: { onFixadaChange?: (f: boolean) => void }) {
+interface Props { onFixadaChange?: (fixada: boolean) => void }
+
+export default function Sidebar({ onFixadaChange }: Props) {
   const [fixada, setFixada] = useState(false)
   const [aberta, setAberta] = useState(false)
   const [logo, setLogo] = useState<string | null>(null)
-  const [secoesAbertas, setSecoesAbertas] = useState<Record<string, boolean>>({
-    'Administração': true, 'Operação': false, 'Financeiro': false,
-  })
+  const [nome, setNome] = useState('BARBEROS')
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -50,23 +45,19 @@ export default function Sidebar({ onFixadaChange }: { onFixadaChange?: (f: boole
 
   useEffect(() => {
     const logoSalva = localStorage.getItem('barberos_logo')
+    const nomeSalvo = localStorage.getItem('barberos_nome')
     if (logoSalva) setLogo(logoSalva)
+    if (nomeSalvo) setNome(nomeSalvo)
   }, [])
 
-  // Abre a seção da rota ativa automaticamente
-  useEffect(() => {
-    MENU.forEach(grupo => {
-      if (!grupo.secao) return
-      const temAtivo = grupo.itens.some(item =>
-        pathname === item.rota || (item.rota !== '/gestao' && pathname.startsWith(item.rota))
-      )
-      if (temAtivo) {
-        setSecoesAbertas(prev => ({ ...prev, [grupo.secao!]: true }))
-      }
-    })
-  }, [pathname])
+  function toggleFixada() {
+    const novo = !fixada
+    setFixada(novo)
+    setAberta(false)
+    onFixadaChange?.(novo)
+  }
 
-  const expandida = fixada || aberta
+  const largura = (fixada || aberta) ? 240 : 56
 
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -82,27 +73,15 @@ export default function Sidebar({ onFixadaChange }: { onFixadaChange?: (f: boole
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    window.location.href = '/auth/login'
+    router.push('/auth/login')
   }
 
-  function toggleFixar() {
-    const novo = !fixada
-    setFixada(novo)
-    setAberta(false)
-    onFixadaChange?.(novo)
-  }
-
-  function toggleSecao(secao: string) {
-    setSecoesAbertas(prev => ({ ...prev, [secao]: !prev[secao] }))
-  }
+  const expandido = fixada || aberta
 
   return (
     <>
       {aberta && !fixada && (
-        <div onClick={() => setAberta(false)} style={{
-          position: 'fixed', inset: 0, zIndex: 40,
-          background: 'rgba(26,26,34,0.15)', backdropFilter: 'blur(2px)',
-        }} />
+        <div onClick={() => setAberta(false)} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} />
       )}
 
       <aside
@@ -111,122 +90,62 @@ export default function Sidebar({ onFixadaChange }: { onFixadaChange?: (f: boole
         style={{
           position: fixada ? 'relative' : 'fixed',
           top: 0, left: 0, height: '100vh',
-          width: expandida ? 220 : 56,
-          background: '#FFFFFF',
-          borderRight: '1px solid #E4E2DC',
+          width: largura,
+          background: '#0A0A0C',
+          borderRight: '1px solid #1E1E24',
           display: 'flex', flexDirection: 'column',
-          transition: 'width 0.22s cubic-bezier(0.4,0,0.2,1)',
-          overflow: 'hidden', zIndex: 50, flexShrink: 0,
-          boxShadow: expandida && !fixada ? '4px 0 24px rgba(0,0,0,0.08)' : 'none',
+          transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1)',
+          overflow: 'hidden',
+          zIndex: 50,
+          flexShrink: 0,
         }}
       >
         {/* LOGO */}
-        <div style={{
-          padding: expandida ? '16px 14px' : '14px 8px',
-          borderBottom: '1px solid #E4E2DC',
-          display: 'flex', alignItems: 'center', gap: 10,
-          minHeight: 64, overflow: 'hidden',
-          transition: 'padding 0.22s', flexShrink: 0,
-        }}>
-          <div
-            onClick={() => fileRef.current?.click()}
-            title="Clique para trocar a logo"
-            style={{
-              width: 36, height: 36, borderRadius: 4, flexShrink: 0,
-              background: logo ? 'transparent' : '#F4F2ED',
-              border: `1px solid ${logo ? 'transparent' : '#E4E2DC'}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', overflow: 'hidden',
-            }}
-          >
-            {logo
-              ? <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontSize: 16, color: '#B8860B' }}>✦</span>
-            }
+        <div style={{ padding: '18px 10px 14px', borderBottom: '1px solid #1E1E24', display: 'flex', alignItems: 'center', gap: 10, minHeight: 68, overflow: 'hidden' }}>
+          <div onClick={() => fileRef.current?.click()} title="Trocar logo" style={{ width: 36, height: 36, borderRadius: 4, background: logo ? 'transparent' : '#1A1A1E', border: `1px solid ${logo ? 'transparent' : '#2A2A30'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, overflow: 'hidden' }}>
+            {logo ? <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 16, color: '#B8860B' }}>✦</span>}
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
-          {expandida && (
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#B8860B', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
-                BARBEROS
-              </div>
-              <div style={{ fontSize: 10, color: '#9A9890', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 1 }}>
-                Gestão
-              </div>
+          {expandido && (
+            <div style={{ overflow: 'hidden', flex: 1 }}>
+              <div style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#B8860B', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>{nome}</div>
+              <div style={{ fontSize: 9, color: '#55555F', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 1 }}>Gestão</div>
             </div>
           )}
         </div>
 
         {/* NAV */}
-        <nav style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '8px 0' }}>
-          {MENU.map((grupo, gi) => (
+        <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto', overflowX: 'hidden' }}>
+          {GRUPOS.map((grupo, gi) => (
             <div key={gi}>
-              {/* TÍTULO DA SEÇÃO */}
-              {grupo.secao && expandida && (
-                <button
-                  onClick={() => toggleSecao(grupo.secao!)}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 14px 6px',
-                    background: 'transparent', border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span style={{
-                    fontFamily: 'monospace', fontSize: 9,
-                    letterSpacing: '0.2em', color: '#B0AEA8',
-                    textTransform: 'uppercase',
-                  }}>{grupo.secao}</span>
-                  <span style={{ fontSize: 10, color: '#C0BEB8' }}>
-                    {secoesAbertas[grupo.secao] ? '▲' : '▼'}
-                  </span>
-                </button>
+              {expandido && (
+                <div style={{ padding: '12px 14px 4px', fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.18em', color: '#3A3A42', textTransform: 'uppercase' }}>{grupo.label}</div>
               )}
-
-              {/* SEPARADOR quando recolhida */}
-              {grupo.secao && !expandida && gi > 0 && (
-                <div style={{ height: 1, background: '#F0EEE8', margin: '6px 8px' }} />
-              )}
-
-              {/* ITENS */}
-              {(!grupo.secao || !expandida || secoesAbertas[grupo.secao]) && grupo.itens.map(item => {
-                const ativo = pathname === item.rota ||
-                  (item.rota !== '/gestao' && pathname.startsWith(item.rota))
+              {!expandido && gi > 0 && <div style={{ height: 1, background: '#1E1E24', margin: '6px 10px' }} />}
+              {grupo.itens.map(mod => {
+                const isAtivo = pathname === mod.rota || (mod.rota !== '/gestao' && pathname.startsWith(mod.rota))
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => item.ativo && router.push(item.rota)}
-                    title={!expandida ? item.label : undefined}
+                    key={mod.id}
+                    onClick={() => mod.ativo && router.push(mod.rota)}
+                    title={!expandido ? mod.label : undefined}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center',
-                      gap: 10,
-                      padding: expandida ? '9px 14px' : '9px 0',
-                      justifyContent: expandida ? 'flex-start' : 'center',
-                      background: ativo ? 'rgba(184,134,11,0.08)' : 'transparent',
-                      border: 'none',
-                      borderLeft: `2px solid ${ativo ? '#B8860B' : 'transparent'}`,
-                      color: ativo ? '#8A6200' : item.ativo ? '#3A3830' : '#C0BEB8',
-                      cursor: item.ativo ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.15s',
+                      gap: 10, padding: expandido ? '10px 16px' : '10px 0',
+                      justifyContent: expandido ? 'flex-start' : 'center',
+                      background: isAtivo ? 'rgba(184,134,11,0.12)' : 'transparent',
+                      border: 'none', borderLeft: expandido ? `2px solid ${isAtivo ? '#B8860B' : 'transparent'}` : 'none',
+                      color: isAtivo ? '#D4A017' : mod.ativo ? '#7A7A85' : '#3A3A42',
+                      cursor: mod.ativo ? 'pointer' : 'not-allowed',
+                      transition: 'all 0.15s', textAlign: 'left',
                       whiteSpace: 'nowrap', overflow: 'hidden',
                     }}
-                    onMouseEnter={e => {
-                      if (!ativo && item.ativo) e.currentTarget.style.background = '#F8F6F0'
-                    }}
-                    onMouseLeave={e => {
-                      if (!ativo) e.currentTarget.style.background = 'transparent'
-                    }}
                   >
-                    <span style={{ fontSize: 14, flexShrink: 0, width: expandida ? 'auto' : 20, textAlign: 'center' }}>
-                      {item.icon}
-                    </span>
-                    {expandida && (
-                      <span style={{ fontSize: 12, fontWeight: ativo ? 600 : 400 }}>
-                        {item.label}
-                        {!item.ativo && (
-                          <span style={{ fontSize: 8, color: '#C0BEB8', marginLeft: 6, letterSpacing: '0.05em' }}>EM BREVE</span>
-                        )}
+                    <span style={{ fontSize: 15, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>{mod.icon}</span>
+                    {expandido && (
+                      <span style={{ fontSize: 12, fontWeight: isAtivo ? 600 : 400, letterSpacing: '0.01em' }}>
+                        {mod.label}
+                        {!mod.ativo && <span style={{ fontSize: 8, color: '#3A3A42', marginLeft: 6, letterSpacing: '0.1em' }}>EM BREVE</span>}
                       </span>
                     )}
                   </button>
@@ -237,40 +156,19 @@ export default function Sidebar({ onFixadaChange }: { onFixadaChange?: (f: boole
         </nav>
 
         {/* FOOTER */}
-        <div style={{ padding: '8px 0', borderTop: '1px solid #E4E2DC', flexShrink: 0 }}>
-          <button onClick={toggleFixar} title={fixada ? 'Soltar painel' : 'Fixar painel'} style={{
-            width: '100%', display: 'flex', alignItems: 'center',
-            gap: 10, padding: expandida ? '9px 14px' : '9px 0',
-            justifyContent: expandida ? 'flex-start' : 'center',
-            background: 'transparent', border: 'none',
-            color: fixada ? '#B8860B' : '#9A9890',
-            cursor: 'pointer', transition: 'color 0.15s',
-            whiteSpace: 'nowrap', overflow: 'hidden',
-          }}>
-            <span style={{ fontSize: 12, flexShrink: 0, width: expandida ? 'auto' : 20, textAlign: 'center' }}>
-              {fixada ? '◀' : '▶'}
-            </span>
-            {expandida && <span style={{ fontSize: 11 }}>{fixada ? 'Soltar painel' : 'Fixar painel'}</span>}
+        <div style={{ padding: '8px 0', borderTop: '1px solid #1E1E24' }}>
+          <button onClick={toggleFixada} title={fixada ? 'Soltar sidebar' : 'Fixar sidebar'} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: expandido ? '9px 16px' : '9px 0', justifyContent: expandido ? 'flex-start' : 'center', background: 'transparent', border: 'none', color: fixada ? '#B8860B' : '#55555F', cursor: 'pointer', transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <span style={{ fontSize: 14, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>{fixada ? '◀' : '▶'}</span>
+            {expandido && <span style={{ fontSize: 11, letterSpacing: '0.05em' }}>{fixada ? 'Soltar painel' : 'Fixar painel'}</span>}
           </button>
-
-          <button onClick={handleLogout} title="Sair" style={{
-            width: '100%', display: 'flex', alignItems: 'center',
-            gap: 10, padding: expandida ? '9px 14px' : '9px 0',
-            justifyContent: expandida ? 'flex-start' : 'center',
-            background: 'transparent', border: 'none',
-            color: '#9A9890', cursor: 'pointer', transition: 'color 0.15s',
-            whiteSpace: 'nowrap', overflow: 'hidden',
-          }}
-            onMouseEnter={e => e.currentTarget.style.color = '#DC2626'}
-            onMouseLeave={e => e.currentTarget.style.color = '#9A9890'}
-          >
-            <span style={{ fontSize: 12, flexShrink: 0, width: expandida ? 'auto' : 20, textAlign: 'center' }}>⎋</span>
-            {expandida && <span style={{ fontSize: 11 }}>Sair</span>}
+          <button onClick={handleLogout} title="Sair" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: expandido ? '9px 16px' : '9px 0', justifyContent: expandido ? 'flex-start' : 'center', background: 'transparent', border: 'none', color: '#55555F', cursor: 'pointer', transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <span style={{ fontSize: 14, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>⎋</span>
+            {expandido && <span style={{ fontSize: 11, letterSpacing: '0.05em' }}>Sair</span>}
           </button>
         </div>
       </aside>
 
-      {fixada && <div style={{ width: 220, flexShrink: 0 }} />}
+      {fixada && <div style={{ width: 240, flexShrink: 0 }} />}
     </>
   )
 }
