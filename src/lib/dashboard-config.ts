@@ -1,12 +1,7 @@
-export type WidgetId =
-  | 'faturamento_mes'
-  | 'atendimentos_hoje'
-  | 'ticket_medio'
-  | 'taxa_ocupacao'
-  | 'proximos_agendamentos'
-  | 'top_barbeiros'
-  | 'alertas'
-  | 'novos_clientes'
+// Widgets nativos: faturamento_mes, atendimentos_hoje, ticket_medio, taxa_ocupacao,
+// proximos_agendamentos, top_barbeiros, alertas, novos_clientes.
+// Módulos instalados podem acrescentar os seus (ver src/modules/types.ts), por isso é string.
+export type WidgetId = string
 
 export type WidgetSize = '1x1' | '2x1' | '1x2' | '2x2'
 

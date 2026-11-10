@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
 import {
   WIDGETS_DISPONIVEIS, WidgetId, PerfilDashboard,
   carregarPerfis, salvarPerfis, carregarPerfilAtivo, salvarPerfilAtivo, PERFIL_PADRAO
 } from '@/lib/dashboard-config'
 import { WIDGET_MAP } from '@/components/gestao/widgets'
+import { widgetsDeModulos } from '@/modules/registry'
 
 // Posição de cada widget na grade de 12 colunas (em telas menores a grade vira 2 ou 1 coluna via CSS)
 const LAYOUT: Record<WidgetId, React.CSSProperties> = {
@@ -40,6 +41,18 @@ export default function Dashboard() {
     const interval = setInterval(tick, 15000)
     return () => clearInterval(interval)
   }, [])
+
+  // Widgets que os módulos instalados oferecem (aparecem em "Personalizar")
+  const widgetsModulo = useMemo(() => widgetsDeModulos('gestao'), [])
+  const componentesModulo = useMemo(() => {
+    const mapa: Record<string, React.ComponentType> = {}
+    widgetsModulo.forEach(w => { mapa[w.id] = lazy(w.carregar) as unknown as React.ComponentType })
+    return mapa
+  }, [widgetsModulo])
+  const catalogo = [
+    ...WIDGETS_DISPONIVEIS.map(w => ({ id: w.id, label: w.label, descricao: w.descricao })),
+    ...widgetsModulo.map(w => ({ id: w.id, label: w.label, descricao: w.descricao })),
+  ]
 
   const perfilAtivo = perfis.find(p => p.id === perfilAtivoId) || perfis[0]
   const widgetsExibidos = editando ? widgetsSelecionados : (perfilAtivo?.widgets || [])
@@ -148,7 +161,7 @@ export default function Dashboard() {
             Selecione os widgets — clique para ativar/desativar
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
-            {WIDGETS_DISPONIVEIS.map(w => {
+            {catalogo.map(w => {
               const ativo = widgetsSelecionados.includes(w.id)
               return (
                 <button key={w.id} onClick={() => toggleWidget(w.id)} style={{
@@ -202,11 +215,13 @@ export default function Dashboard() {
         ) : (
           <div className="dash-grid">
             {widgetsExibidos.map(id => {
-              const WidgetComp = WIDGET_MAP[id]
+              const WidgetComp = WIDGET_MAP[id] || componentesModulo[id]
               if (!WidgetComp) return null
               return (
                 <div key={id} style={LAYOUT[id] || { gridColumn: 'span 3' }}>
-                  <WidgetComp />
+                  <Suspense fallback={<div className="card" style={{ height: '100%' }} />}>
+                    <WidgetComp />
+                  </Suspense>
                 </div>
               )
             })}

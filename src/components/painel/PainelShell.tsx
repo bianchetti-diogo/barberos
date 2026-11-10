@@ -57,7 +57,7 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
 
           <nav style={{ display: 'flex', gap: 4, flex: 1 }}>
             {nav.map(item => {
-              const ativo = pathname === item.href
+              const ativo = pathname === item.href || (item.href.includes('/m/') && pathname.startsWith(item.href + '/'))
               return (
                 <Link key={item.href} href={item.href} style={{
                   padding: '6px 12px', borderRadius: 4, fontSize: 12,

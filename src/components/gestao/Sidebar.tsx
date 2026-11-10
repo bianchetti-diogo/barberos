@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { modulosDoPapel, rotaDoModulo } from '@/modules/registry'
 
 const GRUPOS = [
   {
@@ -82,6 +83,25 @@ export default function Sidebar({ onFixadaChange }: Props) {
 
   const expandido = fixada || aberta
 
+  // Módulos instalados (src/modules/registry.ts) entram no menu sozinhos, em grupos próprios
+  const gruposModulos: typeof GRUPOS = []
+  modulosDoPapel('gestao').forEach(m => {
+    const nomeGrupo = m.grupo || 'Módulos'
+    let grupo = gruposModulos.find(g => g.label === nomeGrupo)
+    if (!grupo) {
+      grupo = { label: nomeGrupo, itens: [] }
+      gruposModulos.push(grupo)
+    }
+    grupo.itens.push({
+      id: `modulo-${m.id}`,
+      label: m.nome,
+      icon: m.icone,
+      rota: rotaDoModulo('gestao', m.id),
+      ativo: m.status !== 'em_breve',
+    })
+  })
+  const todosGrupos = [...GRUPOS, ...gruposModulos]
+
   return (
     <>
       {aberta && !fixada && (
@@ -120,7 +140,7 @@ export default function Sidebar({ onFixadaChange }: Props) {
 
         {/* NAV */}
         <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto', overflowX: 'hidden' }}>
-          {GRUPOS.map((grupo, gi) => (
+          {todosGrupos.map((grupo, gi) => (
             <div key={gi}>
               {expandido && (
                 <div style={{ padding: '12px 14px 4px', fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.18em', color: '#3A3A42', textTransform: 'uppercase' }}>{grupo.label}</div>

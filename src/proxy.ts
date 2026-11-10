@@ -104,6 +104,10 @@ export async function proxy(request: NextRequest) {
   ) {
     return negar(403, 'Acesso restrito à gestão.')
   }
+  // Rotas de API dos módulos (src/app/api/m/<modulo>/...): equipe interna apenas
+  if (dentro(path, '/api/m') && role !== 'gestao' && role !== 'barbeiro') {
+    return negar(403, 'Acesso restrito à equipe.')
+  }
   if (dentro(path, '/api/cliente') && role !== 'cliente') {
     return negar(403, 'Acesso restrito a clientes.')
   }
