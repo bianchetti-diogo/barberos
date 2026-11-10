@@ -7,18 +7,10 @@ export default function GestaoLayoutClient({ children }: { children: React.React
   const [fixada, setFixada] = useState(false)
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#F4F2ED' }}>
+    <div className="app-shell">
       <Sidebar onFixadaChange={setFixada} />
-      <main style={{
-        flex: 1,
-        minWidth: 0,
-        marginLeft: fixada ? 0 : 56,
-        background: '#F4F2ED',
-        transition: 'margin-left 0.22s cubic-bezier(0.4,0,0.2,1)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
+      {/* Com a sidebar fixada ela ocupa o próprio espaço no fluxo; solta, ela flutua e o conteúdo reserva 56px. */}
+      <main className="app-main" style={{ marginLeft: fixada ? 0 : 56 }}>
         {children}
       </main>
     </div>

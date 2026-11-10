@@ -1,21 +1,17 @@
- import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-
-// Usa service role para criar usuários sem afetar a sessão atual
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { getAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = getAdmin()
+  let userIdCriado: string | null = null
+
   try {
     const formData = await request.formData()
-    const nome = formData.get('nome') as string
-    const email = formData.get('email') as string
-    const telefone = formData.get('telefone') as string
-    const bio = formData.get('bio') as string
-    const especialidades = JSON.parse(formData.get('especialidades') as string || '[]')
+    const nome = (formData.get('nome') as string | null)?.trim()
+    const email = (formData.get('email') as string | null)?.trim().toLowerCase()
+    const telefone = formData.get('telefone') as string | null
+    const bio = formData.get('bio') as string | null
+    const especialidades = JSON.parse((formData.get('especialidades') as string | null) || '[]')
     const foto = formData.get('foto') as File | null
 
     if (!nome || !email) {
@@ -30,20 +26,27 @@ export async function POST(request: NextRequest) {
       email_confirm: true,
     })
 
-    if (authError) {
-      return NextResponse.json({ error: authError.message }, { status: 400 })
+    if (authError || !authData.user) {
+      const jaExiste = /already|registered|exists/i.test(authError?.message || '')
+      return NextResponse.json(
+        { error: jaExiste ? 'Já existe um usuário com este e-mail.' : authError?.message || 'Erro ao criar usuário.' },
+        { status: 400 }
+      )
     }
 
     const userId = authData.user.id
+    userIdCriado = userId
 
     // 2. Buscar barbearia
     const { data: barbearia } = await supabaseAdmin
       .from('barbearias')
       .select('id')
+      .order('criado_em', { ascending: true })
+      .limit(1)
       .single()
 
     // 3. Criar perfil
-    await supabaseAdmin.from('perfis').insert({
+    const { error: perfilError } = await supabaseAdmin.from('perfis').insert({
       id: userId,
       nome,
       telefone: telefone || null,
@@ -51,9 +54,10 @@ export async function POST(request: NextRequest) {
       barbearia_id: barbearia?.id || null,
       ativo: true,
     })
+    if (perfilError) throw new Error(perfilError.message)
 
     // 4. Upload de foto
-    let foto_url = null
+    let foto_url: string | null = null
     if (foto && foto.size > 0) {
       const bytes = await foto.arrayBuffer()
       const buffer = Buffer.from(bytes)
@@ -73,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Criar barbeiro
-    await supabaseAdmin.from('barbeiros').insert({
+    const { error: barbeiroError } = await supabaseAdmin.from('barbeiros').insert({
       perfil_id: userId,
       barbearia_id: barbearia?.id || null,
       nome,
@@ -82,9 +86,15 @@ export async function POST(request: NextRequest) {
       especialidades,
       ativo: true,
     })
+    if (barbeiroError) throw new Error(barbeiroError.message)
 
     return NextResponse.json({ success: true, userId })
   } catch (e: any) {
+    // Desfaz o usuário criado para não deixar cadastro pela metade
+    if (userIdCriado) {
+      await supabaseAdmin.from('perfis').delete().eq('id', userIdCriado)
+      await supabaseAdmin.auth.admin.deleteUser(userIdCriado)
+    }
     return NextResponse.json({ error: e.message || 'Erro interno.' }, { status: 500 })
   }
 }

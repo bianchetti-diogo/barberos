@@ -66,7 +66,7 @@ export default function ClientesPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid #E0DED8', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div className="page-header">
         <div>
           <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>Administração</div>
           <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>Clientes</h1>
@@ -74,11 +74,11 @@ export default function ClientesPage() {
         <button onClick={() => setNovoAberto(true)} style={{ padding: '9px 20px', background: '#B8860B', color: '#fff', border: 'none', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer' }}>+ NOVO CLIENTE</button>
       </div>
 
-      <div style={{ padding: '24px 28px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10, marginBottom: 24 }}>
+      <div className="page-body">
+        <div className="stat-grid">
           {[
             { label: 'Total', valor: clientes.length },
-            { label: 'Este mês', valor: clientes.filter(c => new Date(c.criado_em).getMonth() === new Date().getMonth()).length },
+            { label: 'Este mês', valor: clientes.filter(c => { const d = new Date(c.criado_em), h = new Date(); return d.getMonth() === h.getMonth() && d.getFullYear() === h.getFullYear() }).length },
             { label: 'Com pontos', valor: clientes.filter(c => c.pontos > 0).length },
           ].map(s => (
             <div key={s.label} style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -131,7 +131,7 @@ export default function ClientesPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 160px 120px 80px 60px', gap: 16, padding: '10px 20px', fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase' }}>
-              <div>Nome</div><div>Telefone</div><div>Cadastro</div><div>Pontos</div><div>Ver</div>
+              <div>Nome</div><div>Telefone</div><div>Cadastro</div><div>Pontos</div><div>Contato</div>
             </div>
             {filtrados.map(c => (
               <div key={c.id} style={{ display: 'grid', gridTemplateColumns: '1fr 160px 120px 80px 60px', gap: 16, padding: '14px 20px', background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
@@ -143,7 +143,11 @@ export default function ClientesPage() {
                 <div style={{ fontSize: 11, color: '#6A6860' }}>{new Date(c.criado_em).toLocaleDateString('pt-BR')}</div>
                 <div style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: c.pontos > 0 ? '#B8860B' : '#C0BEB8' }}>{c.pontos}</div>
                 <div>
-                  <button style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #E4E2DC', borderRadius: 2, color: '#6A6860', fontSize: 11, cursor: 'pointer' }}>→</button>
+                  {c.telefone ? (
+                    <a href={`https://wa.me/55${c.telefone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" title="Chamar no WhatsApp" style={{ display: 'inline-block', padding: '5px 10px', border: '1px solid rgba(22,163,74,0.3)', borderRadius: 2, color: '#16A34A', fontSize: 11 }}>WhatsApp</a>
+                  ) : (
+                    <span style={{ fontSize: 11, color: '#C0BEB8' }}>—</span>
+                  )}
                 </div>
               </div>
             ))}

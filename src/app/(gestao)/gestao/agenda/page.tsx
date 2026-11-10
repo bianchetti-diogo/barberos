@@ -514,7 +514,7 @@ export default function AgendaPage() {
   }
 
   return (
-    <div style={{background:'#F4F2ED',fontFamily:"'Space Grotesk',sans-serif",height:'100vh',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+    <div className="h-screen" style={{background:'#F4F2ED',fontFamily:"'Space Grotesk',sans-serif",display:'flex',flexDirection:'column',overflow:'hidden'}}>
 
       {/* TOPBAR — fixo, não rola */}
       <div style={{padding:'10px 20px',borderBottom:'1px solid #E0DED8',background:'#FAFAF7',display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap',flexShrink:0}}>
@@ -589,12 +589,13 @@ export default function AgendaPage() {
             {/* HEADER sticky top — dentro do scroll para andar na horizontal */}
             <div style={{position:'sticky',top:0,zIndex:20,display:'flex',width:totalW,background:'#FAFAF7',boxShadow:'0 2px 4px rgba(0,0,0,0.06)'}}>
               {/* célula vazia das horas */}
-              <div style={{width:HOUR_COL,flexShrink:0,borderRight:'1px solid #E4E2DC',height:headerH}}/>
+              <div style={{width:HOUR_COL,flexShrink:0,borderRight:'1px solid #E4E2DC',height:headerH,position:'sticky',left:0,zIndex:30,background:'#FAFAF7'}}/>
               {/* cabeçalhos dos grupos */}
               {grupos.map(g=>{
                 const gW=g.cols.length*COL_W
                 return (
-                  <div key={g.barb.id} style={{width:gW,flexShrink:0,borderLeft:'2px solid rgba(184,134,11,0.35)',display:'flex',flexDirection:'column'}}>
+                  <div key={g.barb.id} style={{width:gW,flexShrink:0,position:'relative',display:'flex',flexDirection:'column'}}>
+                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'rgba(184,134,11,0.35)',zIndex:2,pointerEvents:'none'}}/>
                     <div style={{height:BARB_H,borderBottom:multiDays?'1px solid #E4E2DC':'2px solid #E4E2DC',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer'}}
                       onClick={()=>router.push(`/gestao/barbeiros/${g.barb.id}`)}>
                       {g.barb.foto_url
@@ -643,7 +644,8 @@ export default function AgendaPage() {
 
               {/* GRUPOS */}
               {grupos.map(g=>(
-                <div key={g.barb.id} style={{display:'flex',flexShrink:0,borderLeft:'2px solid rgba(184,134,11,0.35)'}}>
+                <div key={g.barb.id} style={{display:'flex',flexShrink:0,position:'relative',width:g.cols.length*COL_W}}>
+                  <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'rgba(184,134,11,0.35)',zIndex:6,pointerEvents:'none'}}/>
                   {g.cols.map(col=>renderColuna(col))}
                 </div>
               ))}

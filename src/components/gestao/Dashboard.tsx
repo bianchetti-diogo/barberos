@@ -7,6 +7,7 @@ import {
 } from '@/lib/dashboard-config'
 import { WIDGET_MAP } from '@/components/gestao/widgets'
 
+// Posição de cada widget na grade de 12 colunas (em telas menores a grade vira 2 ou 1 coluna via CSS)
 const LAYOUT: Record<WidgetId, React.CSSProperties> = {
   faturamento_mes:       { gridColumn: '1 / 5',  gridRow: '1 / 2' },
   atendimentos_hoje:     { gridColumn: '5 / 8',  gridRow: '1 / 2' },
@@ -36,7 +37,7 @@ export default function Dashboard() {
     setWidgetsSelecionados(perfil.widgets)
     const tick = () => setHora(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
     tick()
-    const interval = setInterval(tick, 1000)
+    const interval = setInterval(tick, 15000)
     return () => clearInterval(interval)
   }, [])
 
@@ -95,27 +96,17 @@ export default function Dashboard() {
   const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F4F2ED', color: '#1A1A22', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ color: '#1A1A22', fontFamily: "'Space Grotesk', sans-serif" }}>
 
       {/* HEADER */}
-      <div style={{
-        padding: '20px 28px',
-        borderBottom: '1px solid #E0DED8',
-        background: '#FAFAF7',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
-      }}>
+      <div className="page-header">
         <div>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>
-            {hoje}
-          </div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22', lineHeight: 1.2 }}>
-            Dashboard
-          </h1>
+          <div className="eyebrow">{hoje}</div>
+          <h1 className="page-title">Dashboard</h1>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <div style={{ fontFamily: 'monospace', fontSize: 18, fontWeight: 700, color: '#B8860B', letterSpacing: '0.05em', marginRight: 4 }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: '#B8860B', letterSpacing: '0.05em', marginRight: 4 }}>
             {hora}
           </div>
 
@@ -126,8 +117,8 @@ export default function Dashboard() {
               border: `1px solid ${perfilAtivoId === p.id ? '#B8860B' : '#D8D6D0'}`,
               borderRadius: 3, cursor: 'pointer',
               color: perfilAtivoId === p.id ? '#8A6200' : '#6A6860',
-              fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.05em',
-              transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
+              fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: '0.05em',
+              display: 'flex', alignItems: 'center', gap: 5,
             }}>
               {p.nome}
               {p.id !== 'padrao' && (
@@ -143,7 +134,7 @@ export default function Dashboard() {
             border: `1px solid ${editando ? '#B8860B' : '#D8D6D0'}`,
             borderRadius: 3, cursor: 'pointer',
             color: editando ? '#8A6200' : '#4A4840',
-            fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.08em', transition: 'all 0.15s',
+            fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: '0.08em',
           }}>
             {editando ? '✕ FECHAR' : '◈ PERSONALIZAR'}
           </button>
@@ -153,7 +144,7 @@ export default function Dashboard() {
       {/* PAINEL EDIÇÃO */}
       {editando && (
         <div style={{ background: '#FAFAF7', borderBottom: '1px solid #E0DED8', padding: '20px 28px' }}>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 14 }}>
+          <div className="eyebrow" style={{ marginBottom: 14 }}>
             Selecione os widgets — clique para ativar/desativar
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
@@ -164,44 +155,34 @@ export default function Dashboard() {
                   padding: '8px 14px',
                   background: ativo ? 'rgba(184,134,11,0.08)' : '#FFFFFF',
                   border: `1px solid ${ativo ? '#B8860B' : '#D8D6D0'}`,
-                  borderRadius: 3, cursor: 'pointer',
+                  borderRadius: 4, cursor: 'pointer',
                   color: ativo ? '#8A6200' : '#6A6860',
-                  fontSize: 11, transition: 'all 0.15s',
+                  fontSize: 11,
                   display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left',
                 }}>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{ativo ? '◉' : '○'} {w.label}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>{ativo ? '◉' : '○'} {w.label}</span>
                   <span style={{ fontSize: 10, color: ativo ? '#A08040' : '#9A9890' }}>{w.descricao}</span>
                 </button>
               )
             })}
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            <button onClick={salvarPerfilAtual} style={{
-              padding: '8px 18px', background: '#B8860B', color: '#FFF',
-              border: 'none', borderRadius: 3, fontSize: 11,
-              fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer',
-            }}>
-              SALVAR "{perfilAtivo?.nome?.toUpperCase()}"
+            <button onClick={salvarPerfilAtual} className="btn btn-primary" style={{ fontSize: 11 }}>
+              SALVAR &quot;{perfilAtivo?.nome?.toUpperCase()}&quot;
             </button>
             {!salvandoNovo ? (
-              <button onClick={() => setSalvandoNovo(true)} style={{
-                padding: '8px 14px', background: '#FFFFFF',
-                border: '1px solid #D8D6D0', borderRadius: 3,
-                color: '#6A6860', fontSize: 11, fontFamily: 'monospace', cursor: 'pointer',
-              }}>+ NOVO PERFIL</button>
+              <button onClick={() => setSalvandoNovo(true)} className="btn" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>
+                + NOVO PERFIL
+              </button>
             ) : (
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <input autoFocus value={novoNome} onChange={e => setNovoNome(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && criarNovoPerfil()}
                   placeholder="Nome do perfil..."
-                  style={{
-                    padding: '8px 12px', background: '#FFF',
-                    border: '1px solid #D8D6D0', borderRadius: 3,
-                    color: '#1A1A22', fontSize: 11, fontFamily: 'monospace',
-                    outline: 'none', width: 180,
-                  }} />
-                <button onClick={criarNovoPerfil} style={{ padding: '8px 12px', background: '#B8860B', color: '#FFF', border: 'none', borderRadius: 3, fontSize: 11, fontFamily: 'monospace', fontWeight: 700, cursor: 'pointer' }}>CRIAR</button>
-                <button onClick={() => setSalvandoNovo(false)} style={{ padding: '8px 10px', background: '#FFF', border: '1px solid #D8D6D0', borderRadius: 3, color: '#9A9890', fontSize: 11, cursor: 'pointer' }}>✕</button>
+                  className="field"
+                  style={{ width: 200, padding: '8px 12px', fontSize: 12 }} />
+                <button onClick={criarNovoPerfil} className="btn btn-primary" style={{ fontSize: 11 }}>CRIAR</button>
+                <button onClick={() => setSalvandoNovo(false)} className="btn" style={{ fontSize: 11 }}>✕</button>
               </div>
             )}
           </div>
@@ -209,26 +190,17 @@ export default function Dashboard() {
       )}
 
       {/* GRID */}
-      <div style={{ padding: '20px 24px' }}>
+      <div style={{ padding: '20px 28px 48px', maxWidth: 1400, margin: '0 auto' }}>
         {widgetsExibidos.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 16 }}>
+          <div className="empty-state" style={{ minHeight: 360, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <span style={{ fontSize: 40, color: '#D8D6D0' }}>⬡</span>
-            <p style={{ color: '#9A9890', fontSize: 13, textAlign: 'center', lineHeight: 1.7 }}>
+            <p style={{ fontSize: 13, textAlign: 'center', lineHeight: 1.7 }}>
               Nenhum widget selecionado.<br />Clique em Personalizar para adicionar.
             </p>
-            <button onClick={() => setEditando(true)} style={{
-              padding: '9px 22px', background: '#B8860B', color: '#FFF',
-              border: 'none', borderRadius: 3, fontSize: 11,
-              fontFamily: 'monospace', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.1em',
-            }}>◈ PERSONALIZAR DASHBOARD</button>
+            <button onClick={() => setEditando(true)} className="btn btn-primary">◈ PERSONALIZAR DASHBOARD</button>
           </div>
         ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
-            gridAutoRows: '140px',
-            gap: 10,
-          }}>
+          <div className="dash-grid">
             {widgetsExibidos.map(id => {
               const WidgetComp = WIDGET_MAP[id]
               if (!WidgetComp) return null

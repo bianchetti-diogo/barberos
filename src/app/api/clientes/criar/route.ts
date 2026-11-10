@@ -1,20 +1,17 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { getAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseAdmin = getAdmin()
     const { nome, email, telefone, data_nascimento } = await request.json()
     if (!nome || !email) return NextResponse.json({ error: 'Nome e e-mail obrigatórios.' }, { status: 400 })
 
     const { data: barbearia, error: barbeariaError } = await supabaseAdmin
       .from('barbearias')
       .select('id')
+      .order('criado_em', { ascending: true })
+      .limit(1)
       .single()
 
     if (barbeariaError || !barbearia) {

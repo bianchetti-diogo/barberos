@@ -1,14 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { getAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseAdmin = getAdmin()
     const formData = await request.formData()
     const nome = formData.get('nome') as string
     const descricao = formData.get('descricao') as string
@@ -19,9 +14,14 @@ export async function POST(request: NextRequest) {
 
     if (!nome) return NextResponse.json({ error: 'Nome obrigatório.' }, { status: 400 })
 
-    const { data: barbearia } = await supabaseAdmin.from('barbearias').select('id').single()
+    const { data: barbearia } = await supabaseAdmin
+      .from('barbearias')
+      .select('id')
+      .order('criado_em', { ascending: true })
+      .limit(1)
+      .single()
 
-    let foto_url = null
+    let foto_url: string | null = null
     if (foto && foto.size > 0) {
       const bytes = await foto.arrayBuffer()
       const buffer = Buffer.from(bytes)
@@ -34,11 +34,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    await supabaseAdmin.from('produtos').insert({
+    const { error } = await supabaseAdmin.from('produtos').insert({
       nome, descricao: descricao || null, preco, estoque,
       categoria: categoria || null, foto_url,
       barbearia_id: barbearia?.id, ativo_loja: true,
     })
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
     return NextResponse.json({ success: true })
   } catch (e: any) {

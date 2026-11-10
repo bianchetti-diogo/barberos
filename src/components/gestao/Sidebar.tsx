@@ -25,7 +25,7 @@ const GRUPOS = [
   {
     label: 'Financeiro',
     itens: [
-      { id: 'financeiro', label: 'Faturamento', icon: '◈', rota: '/gestao/financeiro', ativo: false },
+      { id: 'financeiro', label: 'Faturamento', icon: '◈', rota: '/gestao/financeiro', ativo: true },
       { id: 'relatorios', label: 'Relatórios',  icon: '▤', rota: '/gestao/relatorios', ativo: false },
     ],
   },
@@ -48,6 +48,10 @@ export default function Sidebar({ onFixadaChange }: Props) {
     const nomeSalvo = localStorage.getItem('barberos_nome')
     if (logoSalva) setLogo(logoSalva)
     if (nomeSalvo) setNome(nomeSalvo)
+    // O nome da barbearia vem do banco, assim todos os usuários veem o mesmo
+    supabase.from('barbearias').select('nome').limit(1).maybeSingle().then(({ data }) => {
+      if (data?.nome) setNome(String(data.nome).toUpperCase())
+    })
   }, [])
 
   function toggleFixada() {
@@ -167,8 +171,6 @@ export default function Sidebar({ onFixadaChange }: Props) {
           </button>
         </div>
       </aside>
-
-      {fixada && <div style={{ width: 240, flexShrink: 0 }} />}
     </>
   )
 }

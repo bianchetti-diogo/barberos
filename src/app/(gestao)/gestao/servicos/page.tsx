@@ -225,7 +225,7 @@ export default function ServicosPage() {
 
   return (
     <div style={{ background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid #E0DED8', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div className="page-header">
         <div>
           <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>Administração</div>
           <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>Serviços</h1>
@@ -235,10 +235,10 @@ export default function ServicosPage() {
         </button>
       </div>
 
-      <div style={{ padding: '24px 28px', maxWidth: 960, margin: '0 auto' }}>
+      <div className="page-body">
 
         {/* STATS */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 10, marginBottom: 24 }}>
+        <div className="stat-grid">
           {[
             { label: 'Total', valor: servicos.length },
             { label: 'Ativos', valor: servicos.filter(s => s.ativo).length },
@@ -270,7 +270,7 @@ export default function ServicosPage() {
 
         {/* FORM NOVO */}
         {novoAberto && (
-          <FormServico f={form} setF={setForm} onSalvar={salvarNovo} onCancelar={() => setNovoAberto(false)} titulo="Novo Serviço" />
+          FormServico({ f: form, setF: setForm, onSalvar: salvarNovo, onCancelar: () => setNovoAberto(false), titulo: 'Novo Serviço' })
         )}
 
         {/* LISTA */}
@@ -316,7 +316,7 @@ export default function ServicosPage() {
                 )}
 
                 {editando === s.id && (
-                  <FormServico f={editForm} setF={setEditForm} onSalvar={() => salvarEdicao(s.id)} onCancelar={fecharEdicao} titulo={`Editando: ${s.nome}`} />
+                  FormServico({ f: editForm, setF: setEditForm, onSalvar: () => salvarEdicao(s.id), onCancelar: fecharEdicao, titulo: `Editando: ${s.nome}` })
                 )}
               </div>
             ))}

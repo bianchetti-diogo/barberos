@@ -88,7 +88,7 @@ export default function ConfiguracoesPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div style={{ padding: '20px 28px', borderBottom: '1px solid #E0DED8', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div className="page-header">
         <div>
           <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>Administração</div>
           <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>Configurações</h1>
@@ -101,7 +101,7 @@ export default function ConfiguracoesPage() {
         </div>
       </div>
 
-      <div style={{ padding: '24px 28px', maxWidth: 720, margin: '0 auto' }}>
+      <div className="page-body" style={{ maxWidth: 760 }}>
 
         {/* IDENTIDADE */}
         <div style={cardS}>

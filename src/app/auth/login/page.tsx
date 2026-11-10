@@ -2,22 +2,27 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import AuthShell from '@/components/auth/AuthShell'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
-  async function handleLogin() {
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email || !senha) {
+      setErro('Informe e-mail e senha.')
+      return
+    }
     setCarregando(true)
     setErro('')
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim(),
       password: senha,
     })
 
@@ -27,104 +32,54 @@ export default function Login() {
       return
     }
 
-    // Força reload completo para o middleware pegar os cookies
+    // Recarrega por completo para o proxy ler os cookies e levar ao ambiente certo
     window.location.href = '/'
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F4F2ED',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: "'Space Grotesk', sans-serif",
-    }}>
-      <div style={{
-        background: '#fff',
-        border: '1px solid #E4E2DC',
-        borderRadius: 6,
-        padding: '48px',
-        width: '100%',
-        maxWidth: '400px',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-      }}>
-        <div style={{
-          fontFamily: 'monospace',
-          fontSize: 22,
-          fontWeight: 700,
-          color: '#B8860B',
-          letterSpacing: '0.08em',
-          marginBottom: 6,
-        }}>BARBEROS</div>
-        <p style={{ color: '#9A9890', fontSize: 13, marginBottom: 36 }}>
-          Acesse sua conta
-        </p>
-
-        <div style={{ marginBottom: 18 }}>
-          <label style={{
-            display: 'block', fontFamily: 'monospace',
-            fontSize: 10, letterSpacing: '0.15em',
-            color: '#9A9890', textTransform: 'uppercase', marginBottom: 6,
-          }}>E-MAIL</label>
+    <AuthShell
+      titulo="Bem-vindo de volta"
+      subtitulo="Acesse sua conta para continuar"
+      rodape={{ texto: 'Ainda não tem conta?', linkTexto: 'Criar conta de cliente', href: '/auth/cadastro' }}
+    >
+      <form onSubmit={handleLogin} noValidate>
+        <div style={{ marginBottom: 16 }}>
+          <label className="field-label" htmlFor="email">E-mail</label>
           <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={{
-              width: '100%', padding: '10px 14px',
-              background: '#FAFAF7', border: '1px solid #E0DED8',
-              borderRadius: 3, color: '#1A1A22', fontSize: 14,
-              outline: 'none', boxSizing: 'border-box',
-              fontFamily: "'Space Grotesk', sans-serif",
-            }}
+            id="email" type="email" autoComplete="email" autoFocus
+            className="field" value={email} onChange={e => setEmail(e.target.value)}
+            placeholder="voce@email.com"
           />
         </div>
 
-        <div style={{ marginBottom: 28 }}>
-          <label style={{
-            display: 'block', fontFamily: 'monospace',
-            fontSize: 10, letterSpacing: '0.15em',
-            color: '#9A9890', textTransform: 'uppercase', marginBottom: 6,
-          }}>SENHA</label>
-          <input
-            type="password"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
-            style={{
-              width: '100%', padding: '10px 14px',
-              background: '#FAFAF7', border: '1px solid #E0DED8',
-              borderRadius: 3, color: '#1A1A22', fontSize: 14,
-              outline: 'none', boxSizing: 'border-box',
-              fontFamily: "'Space Grotesk', sans-serif",
-            }}
-          />
+        <div style={{ marginBottom: 20 }}>
+          <label className="field-label" htmlFor="senha">Senha</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              id="senha" type={mostrarSenha ? 'text' : 'password'} autoComplete="current-password"
+              className="field" style={{ paddingRight: 64 }}
+              value={senha} onChange={e => setSenha(e.target.value)}
+              placeholder="Sua senha"
+            />
+            <button
+              type="button" onClick={() => setMostrarSenha(v => !v)}
+              style={{ position: 'absolute', right: 6, top: 6, bottom: 6, padding: '0 10px', background: 'transparent', border: 'none', color: '#9A9890', fontSize: 11, cursor: 'pointer', fontFamily: "'Space Mono', monospace" }}
+            >
+              {mostrarSenha ? 'OCULTAR' : 'VER'}
+            </button>
+          </div>
         </div>
 
         {erro && (
-          <p style={{
-            color: '#DC2626', fontSize: 12,
-            marginBottom: 16, fontFamily: 'monospace',
-          }}>{erro}</p>
+          <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>
+            {erro}
+          </div>
         )}
 
-        <button
-          onClick={handleLogin}
-          disabled={carregando}
-          style={{
-            width: '100%', padding: '12px',
-            background: carregando ? '#C0BEB8' : '#B8860B',
-            border: 'none', borderRadius: 3,
-            color: '#fff', fontSize: 12,
-            fontFamily: 'monospace', fontWeight: 700,
-            letterSpacing: '0.12em', cursor: carregando ? 'not-allowed' : 'pointer',
-            transition: 'background 0.15s',
-          }}
-        >
+        <button type="submit" disabled={carregando} className="btn btn-primary" style={{ width: '100%', padding: 13, fontSize: 12 }}>
           {carregando ? 'ENTRANDO...' : 'ENTRAR'}
         </button>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   )
 }
