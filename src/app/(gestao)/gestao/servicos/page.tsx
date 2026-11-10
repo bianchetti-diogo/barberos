@@ -31,7 +31,15 @@ function CatBadge({ cat }: { cat: string }) {
   )
 }
 
-const FORM_VAZIO = { nome: '', descricao: '', duracao_min: 30, preco: 0, categoria: 'base' as const, reofertavel: false, dias_urgencia: 30 }
+const FORM_VAZIO: {
+  nome: string
+  descricao: string
+  duracao_min: number
+  preco: number
+  categoria: Servico['categoria']
+  reofertavel: boolean
+  dias_urgencia: number
+} = { nome: '', descricao: '', duracao_min: 30, preco: 0, categoria: 'base', reofertavel: false, dias_urgencia: 30 }
 
 export default function ServicosPage() {
   const [servicos, setServicos] = useState<Servico[]>([])
