@@ -97,7 +97,7 @@ export default function BarbeiroDetalhePage() {
     setTimeout(() => setSalvo(false), 3000)
   }
 
-  const cardS: React.CSSProperties = { background: '#fff', border: '1px solid #E4E2DC', borderRadius: 6, padding: 24 }
+  const cardS: React.CSSProperties = { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-card)', padding: 24, boxShadow: 'var(--shadow-sm)' }
 
   if (carregando) {
     return <div style={{ textAlign: 'center', padding: '80px 0' }}><span className="spin" /></div>
@@ -115,7 +115,7 @@ export default function BarbeiroDetalhePage() {
   }
 
   return (
-    <div style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div>
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <button className="btn btn-sm" onClick={() => router.push('/gestao/barbeiros')}>← Voltar</button>
@@ -125,7 +125,7 @@ export default function BarbeiroDetalhePage() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {salvo && <span style={{ fontSize: 12, color: '#16A34A', fontFamily: "'Space Mono', monospace" }}>✓ Salvo</span>}
+          {salvo && <span style={{ fontSize: 12, color: 'var(--ok)' }}>✓ Salvo</span>}
           <button className="btn btn-primary" onClick={salvar} disabled={salvando}>{salvando ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}</button>
         </div>
       </div>
@@ -141,8 +141,8 @@ export default function BarbeiroDetalhePage() {
           <div style={cardS}>
             <div className="eyebrow" style={{ marginBottom: 16 }}>Dados do barbeiro</div>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-              <div style={{ width: 80, height: 80, borderRadius: 8, background: '#F4F2ED', border: '1px solid #E4E2DC', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {fotoUrl ? <img src={fotoUrl} alt={form.nome} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 28, color: '#C0BEB8' }}>✂</span>}
+              <div style={{ width: 80, height: 80, borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {fotoUrl ? <img src={fotoUrl} alt={form.nome} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 28, color: 'var(--faint)' }}>✂</span>}
               </div>
               <div className="grid-2" style={{ flex: 1, minWidth: 260, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <div style={{ gridColumn: '1 / -1' }}>
@@ -176,9 +176,9 @@ export default function BarbeiroDetalhePage() {
                 return (
                   <button key={esp} onClick={() => toggleEspecialidade(esp)} style={{
                     padding: '7px 14px', borderRadius: 4, cursor: 'pointer', fontSize: 12,
-                    background: sel ? 'rgba(184,134,11,0.1)' : '#F4F2ED',
-                    border: `1px solid ${sel ? '#B8860B' : '#E4E2DC'}`,
-                    color: sel ? '#8A6200' : '#4A4840',
+                    background: sel ? 'var(--gold-soft)' : 'var(--bg)',
+                    border: `1px solid ${sel ? 'var(--gold)' : 'var(--border)'}`,
+                    color: sel ? 'var(--gold)' : 'var(--muted)',
                   }}>{sel ? '✓ ' : ''}{esp}</button>
                 )
               })}
@@ -186,7 +186,7 @@ export default function BarbeiroDetalhePage() {
           </div>
 
           {erro && (
-            <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 13, padding: '10px 14px' }}>{erro}</div>
+            <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', fontSize: 13, padding: '10px 14px' }}>{erro}</div>
           )}
         </div>
       </div>

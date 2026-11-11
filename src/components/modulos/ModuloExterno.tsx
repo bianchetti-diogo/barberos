@@ -59,7 +59,7 @@ export default function ModuloExterno({ modulo, altura }: { modulo: ModuloExtern
       title={modulo.nome}
       onLoad={enviarContexto}
       sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
-      style={{ width: '100%', height: altura, border: 'none', display: 'block', background: '#fff' }}
+      style={{ width: '100%', height: altura, border: 'none', display: 'block', background: 'var(--surface)' }}
     />
   )
 }

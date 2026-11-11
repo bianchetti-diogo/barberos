@@ -19,13 +19,13 @@ const FORM_VAZIO = { nome: '', descricao: '', preco: 0, estoque: 0, categoria: '
 const GRID = '48px minmax(180px,1fr) 100px 110px 80px 90px 90px'
 
 const inputS: React.CSSProperties = {
-  padding: '8px 12px', background: '#FAFAF7', border: '1px solid #E0DED8',
-  borderRadius: 3, color: '#1A1A22', fontSize: 13, outline: 'none',
-  fontFamily: "'Space Grotesk', sans-serif", width: '100%', boxSizing: 'border-box',
+  padding: '8px 12px', background: 'var(--input-bg)', border: '1px solid var(--border-strong)',
+  borderRadius: 8, color: 'var(--text)', fontSize: 13, outline: 'none',
+  width: '100%', boxSizing: 'border-box',
 }
 const labelS: React.CSSProperties = {
-  fontFamily: "'Space Mono', monospace", fontSize: 9, color: '#9A9890',
-  letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 5, display: 'block',
+  fontSize: 12, fontWeight: 500, color: 'var(--muted)',
+  marginBottom: 5, display: 'block',
 }
 
 export default function ProdutosPage() {
@@ -128,13 +128,13 @@ export default function ProdutosPage() {
     comFoto?: boolean
   }) {
     return (
-      <div style={{ background: '#fff', border: '1px solid #B8860B', borderRadius: 6, padding: 20, marginBottom: 16 }}>
-        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: '0.15em', color: '#B8860B', textTransform: 'uppercase', marginBottom: 16 }}>{titulo}</div>
+      <div className="card" style={{ borderColor: 'var(--gold)', padding: 20, marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 16 }}>{titulo}</div>
         <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
           {comFoto && (
             <>
-              <div onClick={() => fileRef.current?.click()} style={{ width: 72, height: 72, borderRadius: 6, background: fotoPreview ? 'transparent' : '#F4F2ED', border: '2px dashed #E0DED8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}>
-                {fotoPreview ? <img src={fotoPreview} alt="Prévia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 20, color: '#C0BEB8' }}>+</span>}
+              <div onClick={() => fileRef.current?.click()} style={{ width: 72, height: 72, borderRadius: 6, background: fotoPreview ? 'transparent' : 'var(--bg)', border: '2px dashed var(--border-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}>
+                {fotoPreview ? <img src={fotoPreview} alt="Prévia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 20, color: 'var(--faint)' }}>+</span>}
               </div>
               <input ref={fileRef} type="file" accept="image/*" onChange={handleFoto} style={{ display: 'none' }} />
             </>
@@ -164,7 +164,7 @@ export default function ProdutosPage() {
           <label style={labelS}>Descrição</label>
           <input style={inputS} value={f.descricao} onChange={e => setF(p => ({ ...p, descricao: e.target.value }))} placeholder="Opcional" />
         </div>
-        {erro && <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '8px 12px', marginBottom: 12 }}>{erro}</div>}
+        {erro && <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 6, color: 'var(--danger)', fontSize: 12, padding: '8px 12px', marginBottom: 12 }}>{erro}</div>}
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={onSalvar} disabled={salvando} className="btn btn-primary">{salvando ? 'SALVANDO...' : 'SALVAR'}</button>
           <button onClick={onCancelar} className="btn">Cancelar</button>
@@ -174,7 +174,7 @@ export default function ProdutosPage() {
   }
 
   return (
-    <div style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div>
       <div className="page-header">
         <div>
           <div className="eyebrow">Administração</div>
@@ -216,14 +216,14 @@ export default function ProdutosPage() {
           <div style={{ textAlign: 'center', padding: '60px 0' }}><span className="spin" /></div>
         ) : filtrados.length === 0 ? (
           <div className="empty-state">
-            <div style={{ fontSize: 32, color: '#D8D6D0', marginBottom: 12 }}>◉</div>
+            <div style={{ fontSize: 32, color: 'var(--border-strong)', marginBottom: 12 }}>◉</div>
             <p style={{ fontSize: 13, marginBottom: 20 }}>{busca ? 'Nenhum produto encontrado.' : 'Nenhum produto cadastrado ainda.'}</p>
             {!busca && <button onClick={() => setNovoAberto(true)} className="btn btn-primary">+ CADASTRAR PRIMEIRO PRODUTO</button>}
           </div>
         ) : (
           <div className="table-scroll">
             <div style={{ minWidth: 760, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: GRID, gap: 16, padding: '8px 20px', fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: GRID, gap: 16, padding: '8px 20px', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--faint)', textTransform: 'uppercase' }}>
                 <div></div><div>Nome</div><div>Categoria</div><div>Preço</div><div>Estoque</div><div>Status</div><div>Ações</div>
               </div>
               {filtrados.map(p => (
@@ -235,28 +235,28 @@ export default function ProdutosPage() {
                       onCancelar: () => { setEditandoId(null); setErro('') },
                     })
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: GRID, gap: 16, padding: '12px 20px', background: '#fff', border: '1px solid #E4E2DC', borderRadius: 6, alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 4, background: p.foto_url ? 'transparent' : '#F4F2ED', border: '1px solid #E4E2DC', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {p.foto_url ? <img src={p.foto_url} alt={p.nome} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 14, color: '#C0BEB8' }}>◉</span>}
+                    <div className="card" style={{ display: 'grid', gridTemplateColumns: GRID, gap: 16, padding: '12px 20px', alignItems: 'center' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 6, background: p.foto_url ? 'transparent' : 'var(--bg)', border: '1px solid var(--border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {p.foto_url ? <img src={p.foto_url} alt={p.nome} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 14, color: 'var(--faint)' }}>◉</span>}
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A22' }}>{p.nome}</div>
-                        {p.descricao && <div style={{ fontSize: 11, color: '#9A9890', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.descricao}</div>}
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{p.nome}</div>
+                        {p.descricao && <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.descricao}</div>}
                       </div>
-                      <div style={{ fontSize: 11, color: '#6A6860' }}>{p.categoria || '—'}</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: '#1A1A22' }}>R$ {Number(p.preco).toFixed(2)}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>{p.categoria || '—'}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: 'var(--text)' }}>R$ {Number(p.preco).toFixed(2)}</div>
                       <div>
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, color: p.estoque === 0 ? '#DC2626' : p.estoque <= 3 ? '#D97706' : '#16A34A' }}>{p.estoque}</span>
-                        <span style={{ fontSize: 10, color: '#9A9890', marginLeft: 3 }}>un</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 13, fontWeight: 700, color: p.estoque === 0 ? 'var(--danger)' : p.estoque <= 3 ? 'var(--warn)' : 'var(--ok)' }}>{p.estoque}</span>
+                        <span style={{ fontSize: 10, color: 'var(--faint)', marginLeft: 3 }}>un</span>
                       </div>
                       <div>
-                        <span style={{ display: 'inline-block', background: p.ativo_loja ? 'rgba(46,204,113,0.1)' : 'rgba(239,68,68,0.08)', border: `1px solid ${p.ativo_loja ? 'rgba(46,204,113,0.3)' : 'rgba(239,68,68,0.2)'}`, borderRadius: 3, padding: '3px 8px', fontSize: 10, fontFamily: "'Space Mono', monospace", color: p.ativo_loja ? '#16A34A' : '#DC2626' }}>
+                        <span className={`tag ${p.ativo_loja ? 'tag-ok' : 'tag-erro'}`}>
                           {p.ativo_loja ? 'Na loja' : 'Oculto'}
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button onClick={() => abrirEdicao(p)} title="Editar" className="btn btn-sm">✎</button>
-                        <button onClick={() => toggleAtivo(p.id, p.ativo_loja)} title={p.ativo_loja ? 'Ocultar da loja' : 'Publicar na loja'} className="btn btn-sm" style={{ color: p.ativo_loja ? '#DC2626' : '#16A34A', borderColor: p.ativo_loja ? 'rgba(239,68,68,0.3)' : 'rgba(46,204,113,0.3)' }}>{p.ativo_loja ? '○' : '●'}</button>
+                        <button onClick={() => toggleAtivo(p.id, p.ativo_loja)} title={p.ativo_loja ? 'Ocultar da loja' : 'Publicar na loja'} className="btn btn-sm" style={{ color: p.ativo_loja ? 'var(--danger)' : 'var(--ok)', borderColor: p.ativo_loja ? 'var(--danger)' : 'var(--ok)' }}>{p.ativo_loja ? '○' : '●'}</button>
                       </div>
                     </div>
                   )}

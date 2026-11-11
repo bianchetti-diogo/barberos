@@ -36,7 +36,7 @@ export default function Pagina({ caminho }: PropsModulo) {
     <div>
       <PageHeader eyebrow={barbearia?.nome || 'BarberOS'} titulo="Módulo Modelo" />
       <PageBody>
-        <p style={{ fontSize: 12, color: '#9A9890', marginBottom: 16 }}>
+        <p style={{ fontSize: 12, color: 'var(--faint)', marginBottom: 16 }}>
           Subrota recebida: {caminho.length ? caminho.join(' / ') : '(raiz do módulo)'}
         </p>
         {total === null ? (

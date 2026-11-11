@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import LogoBarberOS from '@/components/brand/LogoBarberOS'
+import BotaoTema from '@/components/ui/BotaoTema'
 
 interface NavItem { href: string; label: string }
 
@@ -13,7 +15,7 @@ interface Props {
   children: React.ReactNode
 }
 
-/** Estrutura das áreas do barbeiro e do cliente: barra superior escura + conteúdo centralizado. */
+/** Estrutura das áreas do barbeiro e do cliente: barra superior + conteúdo centralizado. */
 export default function PainelShell({ rotulo, nav, children }: Props) {
   const [nome, setNome] = useState('')
   const [role, setRole] = useState('')
@@ -44,14 +46,14 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <header className="painel-topbar">
         <div style={{ maxWidth: 980, margin: '0 auto', padding: '0 20px', height: 58, display: 'flex', alignItems: 'center', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 6, background: '#1A1A1E', border: '1px solid #2A2A30', color: '#B8860B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>✂</div>
+            <LogoBarberOS tamanho={34} />
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700, color: '#B8860B', letterSpacing: '0.12em' }}>BARBEROS</div>
-              <div style={{ fontSize: 9, color: '#55555F', letterSpacing: '0.18em', textTransform: 'uppercase' }}>{rotulo}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.12em' }}>BARBEROS</div>
+              <div style={{ fontSize: 9, color: 'var(--faint)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>{rotulo}</div>
             </div>
           </div>
 
@@ -60,9 +62,9 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
               const ativo = pathname === item.href || (item.href.includes('/m/') && pathname.startsWith(item.href + '/'))
               return (
                 <Link key={item.href} href={item.href} style={{
-                  padding: '6px 12px', borderRadius: 4, fontSize: 12,
-                  color: ativo ? '#D4A017' : '#9A9AA5',
-                  background: ativo ? 'rgba(184,134,11,0.12)' : 'transparent',
+                  padding: '6px 12px', borderRadius: 8, fontSize: 12,
+                  color: ativo ? 'var(--gold)' : 'var(--muted)',
+                  background: ativo ? 'var(--gold-soft)' : 'transparent',
                   fontWeight: ativo ? 600 : 400,
                 }}>{item.label}</Link>
               )
@@ -71,10 +73,11 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {role === 'gestao' && (
-              <Link href="/gestao" style={{ fontSize: 11, color: '#9A9AA5', border: '1px solid #2A2A30', borderRadius: 4, padding: '5px 10px' }}>← Gestão</Link>
+              <Link href="/gestao" className="btn btn-sm">← Gestão</Link>
             )}
-            {nome && <span style={{ fontSize: 12, color: '#C8C8D0', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</span>}
-            <button onClick={sair} style={{ background: 'transparent', border: '1px solid #2A2A30', color: '#9A9AA5', borderRadius: 4, padding: '5px 12px', fontSize: 11, cursor: 'pointer' }}>
+            {nome && <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</span>}
+            <div style={{ width: 36 }}><BotaoTema rotulo={false} /></div>
+            <button onClick={sair} className="btn btn-sm">
               Sair
             </button>
           </div>

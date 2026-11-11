@@ -21,12 +21,12 @@ type ViewMode = 'hoje'|'dois_dias'|'semana_barbeiro'|'custom'
 type ModalAba = 'detalhes'|'editar'|'descontos'|'historico'
 
 const STATUS_CONFIG = {
-  pendente:       { label:'Pendente',       color:'#B8860B', bg:'rgba(184,134,11,0.12)',  border:'rgba(184,134,11,0.3)' },
-  confirmado:     { label:'Confirmado',     color:'#0369A1', bg:'rgba(3,105,161,0.10)',   border:'rgba(3,105,161,0.25)' },
-  em_atendimento: { label:'Em atendimento', color:'#7C3AED', bg:'rgba(124,58,237,0.10)',  border:'rgba(124,58,237,0.25)' },
-  concluido:      { label:'Concluído',      color:'#16A34A', bg:'rgba(22,163,74,0.10)',   border:'rgba(22,163,74,0.25)' },
-  cancelado:      { label:'Cancelado',      color:'#9A9890', bg:'rgba(154,152,144,0.08)', border:'rgba(154,152,144,0.2)' },
-  faltou:         { label:'Faltou',         color:'#DC2626', bg:'rgba(220,38,38,0.08)',   border:'rgba(220,38,38,0.2)' },
+  pendente:       { label:'Pendente',       color:'var(--gold)',   bg:'var(--gold-soft)',   border:'color-mix(in srgb, var(--gold) 35%, transparent)' },
+  confirmado:     { label:'Confirmado',     color:'var(--info)',   bg:'var(--info-bg)',     border:'color-mix(in srgb, var(--info) 35%, transparent)' },
+  em_atendimento: { label:'Em atendimento', color:'var(--combo)',  bg:'var(--combo-bg)',    border:'color-mix(in srgb, var(--combo) 35%, transparent)' },
+  concluido:      { label:'Concluído',      color:'var(--ok)',     bg:'var(--ok-bg)',       border:'color-mix(in srgb, var(--ok) 35%, transparent)' },
+  cancelado:      { label:'Cancelado',      color:'var(--faint)',  bg:'var(--surface-2)',   border:'var(--border)' },
+  faltou:         { label:'Faltou',         color:'var(--danger)', bg:'var(--danger-bg)',   border:'color-mix(in srgb, var(--danger) 35%, transparent)' },
 }
 const ZOOM_OPTIONS = [
   { label:'50%',  slotH:60,  interval:30 },
@@ -47,10 +47,10 @@ function addDays(d: Date, n: number) { const r=new Date(d); r.setDate(r.getDate(
 function topOffset(dh: string, slotH: number) { const d=new Date(dh); return (d.getHours()+d.getMinutes()/60-7)*slotH }
 function heightPx(min: number, slotH: number) { return Math.max((min/60)*slotH,22) }
 function urgCor(dias: number, urg: number|null) {
-  if(!urg) return '#9A9890'
-  if(dias>=urg*1.5) return '#DC2626'
-  if(dias>=urg) return '#B8860B'
-  return '#16A34A'
+  if(!urg) return 'var(--faint)'
+  if(dias>=urg*1.5) return 'var(--danger)'
+  if(dias>=urg) return 'var(--gold)'
+  return 'var(--ok)'
 }
 function agInicio(ag: Agendamento) { return new Date(ag.data_hora).getTime() }
 function agFim(ag: Agendamento) { return agInicio(ag) + ag.duracao_min*60000 }
@@ -88,9 +88,9 @@ function calcLayout(ags: Agendamento[]): Record<string,{col:number;total:number}
 
 function Modal({onClose,children,wide}:{onClose:()=>void;children:React.ReactNode;wide?:boolean}) {
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.45)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+    <div style={{position:'fixed',inset:0,background:'var(--overlay)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
       onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
-      <div style={{background:'#fff',borderRadius:6,width:'100%',maxWidth:wide?680:560,maxHeight:'90vh',overflowY:'auto',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}}>
+      <div style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:6,width:'100%',maxWidth:wide?680:560,maxHeight:'90vh',overflowY:'auto',boxShadow:'var(--shadow-md)'}}>
         {children}
       </div>
     </div>
@@ -99,12 +99,12 @@ function Modal({onClose,children,wide}:{onClose:()=>void;children:React.ReactNod
 
 function Toast({msg,type,actions}:{msg:string;type:'confirm'|'warn';actions:{label:string;onClick:()=>void;primary?:boolean}[]}) {
   return (
-    <div style={{position:'fixed',bottom:32,left:'50%',transform:'translateX(-50%)',zIndex:2000,background:type==='warn'?'#7C1D1D':'#1A1A22',color:'#fff',borderRadius:6,padding:'14px 22px',boxShadow:'0 8px 32px rgba(0,0,0,0.35)',display:'flex',alignItems:'center',gap:14,fontFamily:"'Space Grotesk',sans-serif",fontSize:13,maxWidth:540}}>
+    <div style={{position:'fixed',bottom:32,left:'50%',transform:'translateX(-50%)',zIndex:2000,background:type==='warn'?'var(--danger)':'var(--tooltip-bg)',color:'#fff',borderRadius:6,padding:'14px 22px',boxShadow:'var(--shadow-md)',display:'flex',alignItems:'center',gap:14,fontSize:13,maxWidth:540}}>
       {type==='warn'&&<span style={{fontSize:16}}>⚠️</span>}
       <span style={{flex:1}}>{msg}</span>
       <div style={{display:'flex',gap:8}}>
         {actions.map((a,i)=>(
-          <button key={i} onClick={a.onClick} style={{padding:'6px 14px',background:a.primary?'#B8860B':'transparent',color:a.primary?'#fff':'#9A9890',border:a.primary?'none':'1px solid #3A3A42',borderRadius:3,fontSize:11,fontFamily:'monospace',fontWeight:700,cursor:'pointer'}}>{a.label}</button>
+          <button key={i} onClick={a.onClick} style={{padding:'6px 14px',background:a.primary?'var(--gold)':'transparent',color:a.primary?'var(--on-gold)':'var(--faint)',border:a.primary?'none':'1px solid var(--border-strong)',borderRadius:3,fontSize:11,fontWeight:700,cursor:'pointer'}}>{a.label}</button>
         ))}
       </div>
     </div>
@@ -394,8 +394,8 @@ export default function AgendaPage() {
     setSalvando(false); setModalNovo(null); recarregar()
   }
 
-  const inputS:React.CSSProperties={width:'100%',padding:'8px 12px',background:'#FAFAF7',border:'1px solid #E0DED8',borderRadius:3,color:'#1A1A22',fontSize:13,outline:'none',fontFamily:"'Space Grotesk',sans-serif",boxSizing:'border-box'}
-  const labelS:React.CSSProperties={fontFamily:'monospace',fontSize:9,letterSpacing:'0.15em',color:'#9A9890',textTransform:'uppercase',display:'block',marginBottom:4}
+  const inputS:React.CSSProperties={width:'100%',padding:'8px 12px',background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3,color:'var(--text)',fontSize:13,outline:'none',boxSizing:'border-box'}
+  const labelS:React.CSSProperties={fontVariantNumeric:'tabular-nums',fontSize:9,letterSpacing:'0.15em',color:'var(--faint)',textTransform:'uppercase',display:'block',marginBottom:4}
 
   const descTotal=descontos.reduce((acc,d)=>{
     if(d.tipo==='total') return acc+(d.modalidade==='percentual'?(modalDetalhe?.valor_total||0)*(d.valor/100):d.valor)
@@ -411,11 +411,11 @@ export default function AgendaPage() {
     const layout=calcLayout(ags)
     return (
       <div key={`${col.barbeiroId}-${col.date}`}
-        style={{width:COL_W,flexShrink:0,borderLeft:'1px solid #E4E2DC',position:'relative',background:isHoje?'rgba(184,134,11,0.015)':isDrop?'rgba(184,134,11,0.03)':'transparent'}}
+        style={{width:COL_W,flexShrink:0,borderLeft:'1px solid var(--border)',position:'relative',background:isHoje?'color-mix(in srgb, var(--gold) 3%, transparent)':isDrop?'color-mix(in srgb, var(--gold) 6%, transparent)':'transparent'}}
       >
         {/* SLOTS CLICÁVEIS */}
         {HOURS.map(h=>(
-          <div key={h} style={{height:slotH,borderBottom:'1px solid #E4E2DC',position:'relative'}}>
+          <div key={h} style={{height:slotH,borderBottom:'1px solid var(--border)',position:'relative'}}>
             {Array.from({length:slotsPerHour},(_,si)=>{
               const mo=si*interval; const st=(mo/60)*slotH; const sh=(interval/60)*slotH; const hora=fmtSlot(h,mo)
               const isDropSlot=isDrop&&dropTarget?.hora===hora
@@ -424,13 +424,13 @@ export default function AgendaPage() {
                   onClick={()=>abrirNovo(col.date,hora,col.barbeiroId)}
                   onDragOver={e=>onDragOverSlot(e,col.date,hora,col.barbeiroId)}
                   onDrop={e=>onDropSlot(e,col.date,hora,col.barbeiroId)}
-                  style={{position:'absolute',left:0,right:0,top:st,height:sh,cursor:'pointer',background:isDropSlot?'rgba(184,134,11,0.18)':'transparent',border:isDropSlot?'1px dashed #B8860B':'none',boxSizing:'border-box',zIndex:1}}
-                  onMouseEnter={e=>(e.currentTarget.style.background=isDropSlot?'rgba(184,134,11,0.18)':'rgba(184,134,11,0.05)')}
-                  onMouseLeave={e=>(e.currentTarget.style.background=isDropSlot?'rgba(184,134,11,0.18)':'transparent')}
+                  style={{position:'absolute',left:0,right:0,top:st,height:sh,cursor:'pointer',background:isDropSlot?'var(--gold-soft)':'transparent',border:isDropSlot?'1px dashed var(--gold)':'none',boxSizing:'border-box',zIndex:1}}
+                  onMouseEnter={e=>(e.currentTarget.style.background=isDropSlot?'var(--gold-soft)':'color-mix(in srgb, var(--gold) 6%, transparent)')}
+                  onMouseLeave={e=>(e.currentTarget.style.background=isDropSlot?'var(--gold-soft)':'transparent')}
                 />
               )
             })}
-            {interval<30&&<div style={{position:'absolute',left:0,right:0,top:slotH/2,borderTop:'1px dashed #EAE8E2',pointerEvents:'none'}}/>}
+            {interval<30&&<div style={{position:'absolute',left:0,right:0,top:slotH/2,borderTop:'1px dashed var(--border)',pointerEvents:'none'}}/>}
           </div>
         ))}
 
@@ -469,25 +469,25 @@ export default function AgendaPage() {
                   background:cfg.bg,border:`1px solid ${cfg.border}`,borderLeft:`3px solid ${cfg.color}`,
                   borderRadius:3,padding:'3px 5px',cursor:'grab',overflow:'hidden',zIndex:lyt.total>1?3:2,
                   opacity:isDrag?0.35:1,transition:'box-shadow 0.15s,opacity 0.15s',
-                  pointerEvents:'all',boxShadow:'0 1px 3px rgba(0,0,0,0.07)',
+                  pointerEvents:'all',boxShadow:'var(--shadow-sm)',
                 }}
-                onMouseEnter={e=>(e.currentTarget.style.boxShadow='0 3px 10px rgba(0,0,0,0.16)')}
-                onMouseLeave={e=>(e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.07)')}
+                onMouseEnter={e=>(e.currentTarget.style.boxShadow='var(--shadow-md)')}
+                onMouseLeave={e=>(e.currentTarget.style.boxShadow='var(--shadow-sm)')}
               >
                 <div style={{fontSize:10,fontWeight:700,color:cfg.color,lineHeight:1.2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',display:'flex',alignItems:'center',gap:3}}>
                   {new Date(ag.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} {ag.cliente?.nome||'Cliente'}
-                  {ag.tem_desconto&&<span style={{fontSize:8,color:'#16A34A',marginLeft:2}}>%</span>}
+                  {ag.tem_desconto&&<span style={{fontSize:8,color:'var(--ok)',marginLeft:2}}>%</span>}
                 </div>
-                {h>34&&<div style={{fontSize:9,color:'#6A6860',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
+                {h>34&&<div style={{fontSize:9,color:'var(--muted)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
                   {ag.servicos_ids?.length>1?`${ag.servicos_ids.length} serv · ${ag.duracao_min}min`:ag.servico?.nome||'—'}
                 </div>}
-                {h>50&&<div style={{fontSize:9,color:cfg.color,marginTop:1,fontFamily:'monospace',fontWeight:700}}>
+                {h>50&&<div style={{fontSize:9,color:cfg.color,marginTop:1,fontVariantNumeric:'tabular-nums',fontWeight:700}}>
                   {ag.tem_desconto&&ag.valor_final!=null?<><span style={{textDecoration:'line-through',opacity:0.5,marginRight:3}}>R${ag.valor_total.toFixed(0)}</span>R${ag.valor_final.toFixed(0)}</>:`R$ ${ag.valor_total.toFixed(0)}`}
                 </div>}
                 {h<=70&&temOportunidade&&(
                   <div style={{position:'absolute',bottom:2,right:3,fontSize:9,display:'flex',alignItems:'center',gap:2}}>
                     <span style={{fontSize:9}}>⚠️</span>
-                    <span style={{fontFamily:'monospace',fontWeight:700,color:'#7C3AED',fontSize:8,letterSpacing:'0.05em'}}>OPORTUNIDADE</span>
+                    <span style={{fontVariantNumeric:'tabular-nums',fontWeight:700,color:'var(--combo)',fontSize:8,letterSpacing:'0.05em'}}>OPORTUNIDADE</span>
                   </div>
                 )}
                 {h>70&&extras.length>0&&(
@@ -496,12 +496,12 @@ export default function AgendaPage() {
                       const cor=urgCor(e.dias_desde,e.dias_urgencia); const urg=e.dias_urgencia&&e.dias_desde>=e.dias_urgencia
                       return (
                         <div key={e.servico_id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:1}}>
-                          <span style={{fontSize:8,color:'#7C3AED',fontWeight:urg?700:400,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'65%'}}>{urg?'⚠️ ':''}{e.nome}</span>
-                          <span style={{fontFamily:'monospace',fontSize:8,color:cor,fontWeight:700}}>{e.dias_desde}d</span>
+                          <span style={{fontSize:8,color:'var(--combo)',fontWeight:urg?700:400,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'65%'}}>{urg?'⚠️ ':''}{e.nome}</span>
+                          <span style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:cor,fontWeight:700}}>{e.dias_desde}d</span>
                         </div>
                       )
                     })}
-                    {extras.length>3&&<div style={{fontSize:8,color:'#9A9890',fontFamily:'monospace'}}>+{extras.length-3} mais</div>}
+                    {extras.length>3&&<div style={{fontSize:8,color:'var(--faint)',fontVariantNumeric:'tabular-nums'}}>+{extras.length-3} mais</div>}
                   </div>
                 )}
                 <div style={{position:'absolute',top:2,right:3,fontSize:7,color:cfg.color,opacity:0.4}}>⠿</div>
@@ -514,22 +514,22 @@ export default function AgendaPage() {
   }
 
   return (
-    <div className="h-screen" style={{background:'#F4F2ED',fontFamily:"'Space Grotesk',sans-serif",display:'flex',flexDirection:'column',overflow:'hidden'}}>
+    <div className="h-screen" style={{background:'var(--bg)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
 
       {/* TOPBAR — fixo, não rola */}
-      <div style={{padding:'10px 20px',borderBottom:'1px solid #E0DED8',background:'#FAFAF7',display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap',flexShrink:0}}>
+      <div style={{padding:'10px 20px',borderBottom:'1px solid var(--border)',background:'var(--surface-2)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,flexWrap:'wrap',flexShrink:0}}>
         <div>
-          <div style={{fontFamily:'monospace',fontSize:10,letterSpacing:'0.2em',color:'#9A9890',textTransform:'uppercase',marginBottom:1}}>Operação</div>
-          <h1 style={{fontSize:18,fontWeight:700,letterSpacing:'-0.02em',color:'#1A1A22'}}>Agenda</h1>
+          <div style={{fontVariantNumeric:'tabular-nums',fontSize:10,letterSpacing:'0.2em',color:'var(--faint)',textTransform:'uppercase',marginBottom:1}}>Operação</div>
+          <h1 style={{fontSize:18,fontWeight:700,letterSpacing:'-0.02em',color:'var(--text)'}}>Agenda</h1>
         </div>
         <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>
-          <button onClick={()=>setAnchor(p=>addDays(p,-1))} style={{padding:'5px 9px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,cursor:'pointer',fontSize:13,color:'#4A4840'}}>‹</button>
-          <button onClick={()=>setAnchor(new Date())} style={{padding:'5px 10px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,cursor:'pointer',fontSize:10,color:'#4A4840',fontFamily:'monospace'}}>HOJE</button>
-          <button onClick={()=>setAnchor(p=>addDays(p,1))} style={{padding:'5px 9px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,cursor:'pointer',fontSize:13,color:'#4A4840'}}>›</button>
-          <span style={{fontFamily:'monospace',fontSize:11,color:'#6A6860'}}>{anchor.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</span>
-          <div style={{display:'flex',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,overflow:'hidden'}}>
+          <button onClick={()=>setAnchor(p=>addDays(p,-1))} style={{padding:'5px 9px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,cursor:'pointer',fontSize:13,color:'var(--muted)'}}>‹</button>
+          <button onClick={()=>setAnchor(new Date())} style={{padding:'5px 10px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,cursor:'pointer',fontSize:10,color:'var(--muted)',fontVariantNumeric:'tabular-nums'}}>HOJE</button>
+          <button onClick={()=>setAnchor(p=>addDays(p,1))} style={{padding:'5px 9px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,cursor:'pointer',fontSize:13,color:'var(--muted)'}}>›</button>
+          <span style={{fontVariantNumeric:'tabular-nums',fontSize:11,color:'var(--muted)'}}>{anchor.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</span>
+          <div style={{display:'flex',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,overflow:'hidden'}}>
             {([['hoje','Hoje'],['dois_dias','2 Dias'],['semana_barbeiro','Semana'],['custom','Custom']] as [ViewMode,string][]).map(([m,l])=>(
-              <button key={m} onClick={()=>{setViewMode(m);if(m==='custom')setShowCustomPanel(true)}} style={{padding:'5px 10px',border:'none',cursor:'pointer',fontFamily:'monospace',fontSize:10,fontWeight:viewMode===m?700:400,background:viewMode===m?'#B8860B':'transparent',color:viewMode===m?'#fff':'#6A6860',transition:'all 0.15s',borderRight:'1px solid #E0DED8'}}>{l}</button>
+              <button key={m} onClick={()=>{setViewMode(m);if(m==='custom')setShowCustomPanel(true)}} style={{padding:'5px 10px',border:'none',cursor:'pointer',fontVariantNumeric:'tabular-nums',fontSize:10,fontWeight:viewMode===m?700:400,background:viewMode===m?'var(--gold)':'transparent',color:viewMode===m?'var(--on-gold)':'var(--muted)',transition:'all 0.15s',borderRight:'1px solid var(--border)'}}>{l}</button>
             ))}
           </div>
           {viewMode==='semana_barbeiro'&&barbeiros.length>0&&(
@@ -537,85 +537,85 @@ export default function AgendaPage() {
               {barbeiros.map(b=><option key={b.id} value={b.id}>{b.nome}</option>)}
             </select>
           )}
-          <div style={{display:'flex',alignItems:'center',gap:3,background:'#fff',border:'1px solid #E0DED8',borderRadius:3,padding:'3px 5px'}}>
-            <span style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',marginRight:3}}>ZOOM</span>
+          <div style={{display:'flex',alignItems:'center',gap:3,background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,padding:'3px 5px'}}>
+            <span style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',marginRight:3}}>ZOOM</span>
             {ZOOM_OPTIONS.map((z,i)=>(
-              <button key={i} onClick={()=>setZoomIdx(i)} style={{padding:'3px 7px',borderRadius:2,border:'none',cursor:'pointer',fontFamily:'monospace',fontSize:9,fontWeight:i===zoomIdx?700:400,background:i===zoomIdx?'#B8860B':'transparent',color:i===zoomIdx?'#fff':'#6A6860'}}>{z.label}</button>
+              <button key={i} onClick={()=>setZoomIdx(i)} style={{padding:'3px 7px',borderRadius:2,border:'none',cursor:'pointer',fontVariantNumeric:'tabular-nums',fontSize:9,fontWeight:i===zoomIdx?700:400,background:i===zoomIdx?'var(--gold)':'transparent',color:i===zoomIdx?'var(--on-gold)':'var(--muted)'}}>{z.label}</button>
             ))}
           </div>
-          <button onClick={()=>abrirNovo(hoje,'09:00',barbeiros[0]?.id||'')} style={{padding:'6px 14px',background:'#B8860B',color:'#fff',border:'none',borderRadius:3,fontSize:11,fontFamily:'monospace',fontWeight:700,cursor:'pointer'}}>+ AGENDAR</button>
+          <button onClick={()=>abrirNovo(hoje,'09:00',barbeiros[0]?.id||'')} style={{padding:'6px 14px',background:'var(--gold)',color:'var(--on-gold)',border:'none',borderRadius:3,fontSize:11,fontVariantNumeric:'tabular-nums',fontWeight:700,cursor:'pointer'}}>+ AGENDAR</button>
         </div>
       </div>
 
       {/* CUSTOM PANEL */}
       {showCustomPanel&&viewMode==='custom'&&(
-        <div style={{padding:'8px 20px',background:'#fff',borderBottom:'1px solid #E0DED8',display:'flex',gap:16,alignItems:'flex-start',flexWrap:'wrap',flexShrink:0}}>
+        <div style={{padding:'8px 20px',background:'var(--surface)',borderBottom:'1px solid var(--border)',display:'flex',gap:16,alignItems:'flex-start',flexWrap:'wrap',flexShrink:0}}>
           <div>
-            <div style={{fontFamily:'monospace',fontSize:9,color:'#9A9890',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:4}}>Dias</div>
+            <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:4}}>Dias</div>
             <div style={{display:'flex',gap:3}}>{[1,2,3,4,5,7,14].map(n=>(
-              <button key={n} onClick={()=>setCustomDias(n)} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${customDias===n?'#B8860B':'#E4E2DC'}`,background:customDias===n?'rgba(184,134,11,0.1)':'#FAFAF7',color:customDias===n?'#B8860B':'#6A6860',fontFamily:'monospace',fontSize:10,fontWeight:customDias===n?700:400,cursor:'pointer'}}>{n}d</button>
+              <button key={n} onClick={()=>setCustomDias(n)} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${customDias===n?'var(--gold)':'var(--border)'}`,background:customDias===n?'var(--gold-soft)':'var(--surface-2)',color:customDias===n?'var(--gold)':'var(--muted)',fontVariantNumeric:'tabular-nums',fontSize:10,fontWeight:customDias===n?700:400,cursor:'pointer'}}>{n}d</button>
             ))}</div>
           </div>
           <div>
-            <div style={{fontFamily:'monospace',fontSize:9,color:'#9A9890',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:4}}>Barbeiros</div>
+            <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:4}}>Barbeiros</div>
             <div style={{display:'flex',gap:3,flexWrap:'wrap'}}>
-              <button onClick={()=>setCustomBarbs([])} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${customBarbs.length===0?'#B8860B':'#E4E2DC'}`,background:customBarbs.length===0?'rgba(184,134,11,0.1)':'#FAFAF7',color:customBarbs.length===0?'#B8860B':'#6A6860',fontFamily:'monospace',fontSize:10,cursor:'pointer'}}>Todos</button>
+              <button onClick={()=>setCustomBarbs([])} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${customBarbs.length===0?'var(--gold)':'var(--border)'}`,background:customBarbs.length===0?'var(--gold-soft)':'var(--surface-2)',color:customBarbs.length===0?'var(--gold)':'var(--muted)',fontVariantNumeric:'tabular-nums',fontSize:10,cursor:'pointer'}}>Todos</button>
               {barbeiros.map(b=>{const sel=customBarbs.includes(b.id);return(
-                <button key={b.id} onClick={()=>setCustomBarbs(p=>sel?p.filter(x=>x!==b.id):[...p,b.id])} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${sel?'#B8860B':'#E4E2DC'}`,background:sel?'rgba(184,134,11,0.1)':'#FAFAF7',color:sel?'#B8860B':'#6A6860',fontFamily:'monospace',fontSize:10,fontWeight:sel?700:400,cursor:'pointer'}}>{b.nome}</button>
+                <button key={b.id} onClick={()=>setCustomBarbs(p=>sel?p.filter(x=>x!==b.id):[...p,b.id])} style={{padding:'3px 7px',borderRadius:2,border:`1px solid ${sel?'var(--gold)':'var(--border)'}`,background:sel?'var(--gold-soft)':'var(--surface-2)',color:sel?'var(--gold)':'var(--muted)',fontVariantNumeric:'tabular-nums',fontSize:10,fontWeight:sel?700:400,cursor:'pointer'}}>{b.nome}</button>
               )})}
             </div>
           </div>
-          <button onClick={()=>setShowCustomPanel(false)} style={{padding:'3px 8px',background:'transparent',border:'1px solid #E4E2DC',borderRadius:3,color:'#6A6860',fontSize:11,cursor:'pointer',alignSelf:'flex-end'}}>Fechar</button>
+          <button onClick={()=>setShowCustomPanel(false)} style={{padding:'3px 8px',background:'transparent',border:'1px solid var(--border)',borderRadius:3,color:'var(--muted)',fontSize:11,cursor:'pointer',alignSelf:'flex-end'}}>Fechar</button>
         </div>
       )}
 
       {/* LEGENDA */}
-      <div style={{padding:'4px 20px',background:'#FAFAF7',borderBottom:'1px solid #E0DED8',display:'flex',gap:10,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
+      <div style={{padding:'4px 20px',background:'var(--surface-2)',borderBottom:'1px solid var(--border)',display:'flex',gap:10,flexWrap:'wrap',alignItems:'center',flexShrink:0}}>
         {Object.entries(STATUS_CONFIG).map(([k,v])=>(
           <div key={k} style={{display:'flex',alignItems:'center',gap:3,fontSize:10,color:v.color}}>
             <div style={{width:6,height:6,borderRadius:2,background:v.color}}/>{v.label}
           </div>
         ))}
-        <div style={{marginLeft:'auto',fontSize:10,color:'#9A9890',fontFamily:'monospace'}}>⠿ arraste para reagendar</div>
+        <div style={{marginLeft:'auto',fontSize:10,color:'var(--faint)',fontVariantNumeric:'tabular-nums'}}>⠿ arraste para reagendar</div>
       </div>
 
       {barbeiros.length===0?(
-        <div style={{textAlign:'center',padding:'80px 0',color:'#9A9890',fontSize:13}}>Carregando...</div>
+        <div style={{textAlign:'center',padding:'80px 0',color:'var(--faint)',fontSize:13}}>Carregando...</div>
       ):(
         /* CONTAINER DE SCROLL */
         <div style={{flex:1,overflow:'auto',minHeight:0,position:'relative'}}>
           <div style={{width:totalW,minWidth:totalW}}>
 
             {/* HEADER sticky top — dentro do scroll para andar na horizontal */}
-            <div style={{position:'sticky',top:0,zIndex:20,display:'flex',width:totalW,background:'#FAFAF7',boxShadow:'0 2px 4px rgba(0,0,0,0.06)'}}>
+            <div style={{position:'sticky',top:0,zIndex:20,display:'flex',width:totalW,background:'var(--surface-2)',boxShadow:'var(--shadow-sm)'}}>
               {/* célula vazia das horas */}
-              <div style={{width:HOUR_COL,flexShrink:0,borderRight:'1px solid #E4E2DC',height:headerH,position:'sticky',left:0,zIndex:30,background:'#FAFAF7'}}/>
+              <div style={{width:HOUR_COL,flexShrink:0,borderRight:'1px solid var(--border)',height:headerH,position:'sticky',left:0,zIndex:30,background:'var(--surface-2)'}}/>
               {/* cabeçalhos dos grupos */}
               {grupos.map(g=>{
                 const gW=g.cols.length*COL_W
                 return (
                   <div key={g.barb.id} style={{width:gW,flexShrink:0,position:'relative',display:'flex',flexDirection:'column'}}>
-                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'rgba(184,134,11,0.35)',zIndex:2,pointerEvents:'none'}}/>
-                    <div style={{height:BARB_H,borderBottom:multiDays?'1px solid #E4E2DC':'2px solid #E4E2DC',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer'}}
+                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'var(--gold-dark)',zIndex:2,pointerEvents:'none'}}/>
+                    <div style={{height:BARB_H,borderBottom:multiDays?'1px solid var(--border)':'2px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer'}}
                       onClick={()=>router.push(`/gestao/barbeiros/${g.barb.id}`)}>
                       {g.barb.foto_url
-                        ?<img src={g.barb.foto_url} style={{width:24,height:24,borderRadius:'50%',objectFit:'cover',border:'1px solid #B8860B'}}/>
-                        :<div style={{width:24,height:24,borderRadius:'50%',background:'rgba(184,134,11,0.1)',border:'1px solid #B8860B',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#B8860B'}}>✂</div>
+                        ?<img src={g.barb.foto_url} style={{width:24,height:24,borderRadius:'50%',objectFit:'cover',border:'1px solid var(--gold)'}}/>
+                        :<div style={{width:24,height:24,borderRadius:'50%',background:'var(--gold-soft)',border:'1px solid var(--gold)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'var(--gold)'}}>✂</div>
                       }
                       <div>
-                        <div style={{fontFamily:'monospace',fontSize:11,fontWeight:700,color:'#1A1A22',letterSpacing:'0.05em',textDecoration:'underline',textDecorationColor:'rgba(184,134,11,0.4)'}}>{g.barb.nome.toUpperCase()}</div>
-                        {g.cols.length>1&&<div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.1em'}}>{g.cols.length} DIAS</div>}
+                        <div style={{fontVariantNumeric:'tabular-nums',fontSize:11,fontWeight:700,color:'var(--text)',letterSpacing:'0.05em',textDecoration:'underline',textDecorationColor:'var(--gold-dark)'}}>{g.barb.nome.toUpperCase()}</div>
+                        {g.cols.length>1&&<div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.1em'}}>{g.cols.length} DIAS</div>}
                       </div>
                     </div>
                     {multiDays&&(
-                      <div style={{display:'flex',height:DAY_H,borderBottom:'2px solid #E4E2DC'}}>
+                      <div style={{display:'flex',height:DAY_H,borderBottom:'2px solid var(--border)'}}>
                         {g.cols.map(col=>{
                           const isH=col.date===hoje
                           return (
-                            <div key={col.date} style={{width:COL_W,flexShrink:0,borderLeft:'1px solid #E4E2DC',display:'flex',alignItems:'center',justifyContent:'center',background:isH?'rgba(184,134,11,0.06)':'transparent'}}>
-                              <div style={{fontFamily:'monospace',fontSize:9,color:isH?'#B8860B':'#6A6860',letterSpacing:'0.08em',textTransform:'uppercase',fontWeight:isH?700:400,display:'flex',alignItems:'center',gap:4}}>
+                            <div key={col.date} style={{width:COL_W,flexShrink:0,borderLeft:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',background:isH?'var(--gold-soft)':'transparent'}}>
+                              <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:isH?'var(--gold)':'var(--muted)',letterSpacing:'0.08em',textTransform:'uppercase',fontWeight:isH?700:400,display:'flex',alignItems:'center',gap:4}}>
                                 {col.dateObj.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})}
-                                {isH&&<div style={{width:4,height:4,borderRadius:'50%',background:'#B8860B'}}/>}
+                                {isH&&<div style={{width:4,height:4,borderRadius:'50%',background:'var(--gold)'}}/>}
                               </div>
                             </div>
                           )
@@ -630,13 +630,13 @@ export default function AgendaPage() {
             {/* CORPO — horas + colunas */}
             <div style={{display:'flex',width:totalW}}>
               {/* COLUNA DE HORAS — sticky left */}
-              <div style={{width:HOUR_COL,flexShrink:0,background:'#FAFAF7',borderRight:'1px solid #E4E2DC',position:'sticky',left:0,zIndex:10}}>
+              <div style={{width:HOUR_COL,flexShrink:0,background:'var(--surface-2)',borderRight:'1px solid var(--border)',position:'sticky',left:0,zIndex:10}}>
                 {HOURS.map(h=>(
-                  <div key={h} style={{height:slotH,borderBottom:'1px solid #E4E2DC',position:'relative'}}>
-                    <span style={{position:'absolute',top:3,right:6,fontFamily:'monospace',fontSize:9,color:'#B0AEA8'}}>{fmtHour(h)}</span>
+                  <div key={h} style={{height:slotH,borderBottom:'1px solid var(--border)',position:'relative'}}>
+                    <span style={{position:'absolute',top:3,right:6,fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)'}}>{fmtHour(h)}</span>
                     {Array.from({length:slotsPerHour-1},(_,si)=>{
                       const mo=(si+1)*interval; const t=(mo/60)*slotH; const im=mo===30
-                      return <div key={si} style={{position:'absolute',left:0,right:0,top:t,borderTop:`1px ${im?'dashed':'dotted'} ${im?'#D0CEC8':'#EAE8E2'}`}}/>
+                      return <div key={si} style={{position:'absolute',left:0,right:0,top:t,borderTop:`1px ${im?'dashed':'dotted'} ${im?'var(--border-strong)':'var(--border)'}`}}/>
                     })}
                   </div>
                 ))}
@@ -645,7 +645,7 @@ export default function AgendaPage() {
               {/* GRUPOS */}
               {grupos.map(g=>(
                 <div key={g.barb.id} style={{display:'flex',flexShrink:0,position:'relative',width:g.cols.length*COL_W}}>
-                  <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'rgba(184,134,11,0.35)',zIndex:6,pointerEvents:'none'}}/>
+                  <div style={{position:'absolute',left:0,top:0,bottom:0,width:2,background:'var(--gold-dark)',zIndex:6,pointerEvents:'none'}}/>
                   {g.cols.map(col=>renderColuna(col))}
                 </div>
               ))}
@@ -667,12 +667,12 @@ export default function AgendaPage() {
       {/* MODAL NOVO */}
       {modalNovo&&(
         <Modal onClose={()=>setModalNovo(null)}>
-          <div style={{padding:'18px 22px',borderBottom:'1px solid #F0EEE8',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{padding:'18px 22px',borderBottom:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
             <div>
-              <div style={{fontFamily:'monospace',fontSize:9,letterSpacing:'0.15em',color:'#9A9890',textTransform:'uppercase',marginBottom:2}}>Novo Agendamento</div>
-              <div style={{fontSize:15,fontWeight:700,color:'#1A1A22'}}>{form.data?new Date(form.data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}):''}</div>
+              <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,letterSpacing:'0.15em',color:'var(--faint)',textTransform:'uppercase',marginBottom:2}}>Novo Agendamento</div>
+              <div style={{fontSize:15,fontWeight:700,color:'var(--text)'}}>{form.data?new Date(form.data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}):''}</div>
             </div>
-            <button onClick={()=>setModalNovo(null)} style={{background:'transparent',border:'none',fontSize:20,color:'#9A9890',cursor:'pointer'}}>×</button>
+            <button onClick={()=>setModalNovo(null)} style={{background:'transparent',border:'none',fontSize:20,color:'var(--faint)',cursor:'pointer'}}>×</button>
           </div>
           <div style={{padding:'18px 22px',display:'flex',flexDirection:'column',gap:10}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
@@ -691,29 +691,29 @@ export default function AgendaPage() {
             </div>
             <div>
               <label style={labelS}>Serviços</label>
-              <div style={{display:'flex',flexDirection:'column',gap:3,background:'#FAFAF7',border:'1px solid #E0DED8',borderRadius:3,padding:'7px',maxHeight:140,overflowY:'auto'}}>
+              <div style={{display:'flex',flexDirection:'column',gap:3,background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3,padding:'7px',maxHeight:140,overflowY:'auto'}}>
                 {servicos.map(s=>{const sel=form.servicos_selecionados.includes(s.id);return(
-                  <div key={s.id} onClick={()=>toggleServico(s.id)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',borderRadius:3,cursor:'pointer',background:sel?'rgba(184,134,11,0.08)':'#fff',border:`1px solid ${sel?'#B8860B':'#E4E2DC'}`,transition:'all 0.15s'}}>
+                  <div key={s.id} onClick={()=>toggleServico(s.id)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',borderRadius:3,cursor:'pointer',background:sel?'var(--gold-soft)':'var(--surface)',border:`1px solid ${sel?'var(--gold)':'var(--border)'}`,transition:'all 0.15s'}}>
                     <div style={{display:'flex',alignItems:'center',gap:6}}>
-                      <div style={{width:13,height:13,borderRadius:2,border:`2px solid ${sel?'#B8860B':'#C0BEB8'}`,background:sel?'#B8860B':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{sel&&<span style={{color:'#fff',fontSize:8,lineHeight:1}}>✓</span>}</div>
-                      <span style={{fontSize:12,color:'#1A1A22',fontWeight:sel?600:400}}>{s.nome}</span>
+                      <div style={{width:13,height:13,borderRadius:2,border:`2px solid ${sel?'var(--gold)':'var(--border-strong)'}`,background:sel?'var(--gold)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{sel&&<span style={{color:'var(--on-gold)',fontSize:8,lineHeight:1}}>✓</span>}</div>
+                      <span style={{fontSize:12,color:'var(--text)',fontWeight:sel?600:400}}>{s.nome}</span>
                     </div>
-                    <span style={{fontSize:10,color:'#6A6860',fontFamily:'monospace'}}>{s.duracao_min}min · R${s.preco?.toFixed(0)}</span>
+                    <span style={{fontSize:10,color:'var(--muted)',fontVariantNumeric:'tabular-nums'}}>{s.duracao_min}min · R${s.preco?.toFixed(0)}</span>
                   </div>
                 )})}
               </div>
               {form.servicos_selecionados.length>0&&(
-                <div style={{marginTop:5,background:'rgba(184,134,11,0.06)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:3,padding:'7px 11px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <span style={{fontSize:11,color:'#4A4840'}}>{form.servicos_selecionados.length} serv · <strong>{duracaoTotal}min</strong></span>
-                  <span style={{fontFamily:'monospace',fontSize:14,fontWeight:700,color:'#B8860B'}}>R$ {valorTotal.toFixed(2)}</span>
+                <div style={{marginTop:5,background:'var(--gold-soft)',border:'1px solid var(--gold-soft)',borderRadius:3,padding:'7px 11px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <span style={{fontSize:11,color:'var(--muted)'}}>{form.servicos_selecionados.length} serv · <strong>{duracaoTotal}min</strong></span>
+                  <span style={{fontVariantNumeric:'tabular-nums',fontSize:14,fontWeight:700,color:'var(--gold)'}}>R$ {valorTotal.toFixed(2)}</span>
                 </div>
               )}
             </div>
             <div><label style={labelS}>Observações</label><textarea style={{...inputS,height:48,resize:'vertical'} as any} value={form.observacoes} onChange={e=>setForm(p=>({...p,observacoes:e.target.value}))}/></div>
           </div>
-          <div style={{padding:'11px 22px',borderTop:'1px solid #F0EEE8',display:'flex',gap:8,justifyContent:'flex-end'}}>
-            <button onClick={()=>setModalNovo(null)} style={{padding:'7px 14px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,color:'#6A6860',fontSize:12,cursor:'pointer'}}>Cancelar</button>
-            <button onClick={salvarNovo} disabled={salvando||!form.cliente_id||!form.data||!form.hora} style={{padding:'7px 18px',background:(!form.cliente_id||!form.data||!form.hora)?'#C0BEB8':'#B8860B',color:'#fff',border:'none',borderRadius:3,fontSize:12,fontFamily:'monospace',fontWeight:700,cursor:'pointer'}}>
+          <div style={{padding:'11px 22px',borderTop:'1px solid var(--border)',display:'flex',gap:8,justifyContent:'flex-end'}}>
+            <button onClick={()=>setModalNovo(null)} style={{padding:'7px 14px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,color:'var(--muted)',fontSize:12,cursor:'pointer'}}>Cancelar</button>
+            <button onClick={salvarNovo} disabled={salvando||!form.cliente_id||!form.data||!form.hora} style={{padding:'7px 18px',background:(!form.cliente_id||!form.data||!form.hora)?'var(--border-strong)':'var(--gold)',color:'var(--on-gold)',border:'none',borderRadius:3,fontSize:12,fontVariantNumeric:'tabular-nums',fontWeight:700,cursor:'pointer'}}>
               {salvando?'SALVANDO...':'CONFIRMAR'}
             </button>
           </div>
@@ -723,20 +723,20 @@ export default function AgendaPage() {
       {/* MODAL DETALHE */}
       {modalDetalhe&&(
         <Modal onClose={()=>{setModalDetalhe(null);setHistoricoExtras([]);setAlteracoes([]);setDescontos([])}} wide>
-          <div style={{padding:'18px 22px',borderBottom:'1px solid #F0EEE8',display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+          <div style={{padding:'18px 22px',borderBottom:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
             <div>
-              <div style={{fontFamily:'monospace',fontSize:9,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:3}}>Agendamento</div>
-              <div style={{fontSize:17,fontWeight:700,color:'#1A1A22'}}>{modalDetalhe.cliente?.nome||'Cliente'}</div>
-              <div style={{fontSize:12,color:'#6A6860',marginTop:1}}>
+              <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:3}}>Agendamento</div>
+              <div style={{fontSize:17,fontWeight:700,color:'var(--text)'}}>{modalDetalhe.cliente?.nome||'Cliente'}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:1}}>
                 {new Date(modalDetalhe.data_hora).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})} às {new Date(modalDetalhe.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
-                {modalDetalhe.barbeiro&&<span style={{marginLeft:8,color:'#9A9890'}}>· ✂ {modalDetalhe.barbeiro.nome}</span>}
+                {modalDetalhe.barbeiro&&<span style={{marginLeft:8,color:'var(--faint)'}}>· ✂ {modalDetalhe.barbeiro.nome}</span>}
               </div>
             </div>
-            <button onClick={()=>{setModalDetalhe(null);setHistoricoExtras([]);setAlteracoes([]);setDescontos([])}} style={{background:'transparent',border:'none',fontSize:20,color:'#9A9890',cursor:'pointer'}}>×</button>
+            <button onClick={()=>{setModalDetalhe(null);setHistoricoExtras([]);setAlteracoes([]);setDescontos([])}} style={{background:'transparent',border:'none',fontSize:20,color:'var(--faint)',cursor:'pointer'}}>×</button>
           </div>
-          <div style={{display:'flex',borderBottom:'1px solid #E4E2DC',background:'#FAFAF7'}}>
+          <div style={{display:'flex',borderBottom:'1px solid var(--border)',background:'var(--surface-2)'}}>
             {([['detalhes','Detalhes'],['editar','✎ Editar'],['descontos','% Descontos'],['historico','↻ Histórico']] as [ModalAba,string][]).map(([a,l])=>(
-              <button key={a} onClick={()=>setModalAba(a)} style={{padding:'10px 16px',border:'none',cursor:'pointer',fontFamily:'monospace',fontSize:10,fontWeight:modalAba===a?700:400,background:'transparent',color:modalAba===a?'#B8860B':'#6A6860',borderBottom:`2px solid ${modalAba===a?'#B8860B':'transparent'}`,transition:'all 0.15s'}}>
+              <button key={a} onClick={()=>setModalAba(a)} style={{padding:'10px 16px',border:'none',cursor:'pointer',fontVariantNumeric:'tabular-nums',fontSize:10,fontWeight:modalAba===a?700:400,background:'transparent',color:modalAba===a?'var(--gold)':'var(--muted)',borderBottom:`2px solid ${modalAba===a?'var(--gold)':'transparent'}`,transition:'all 0.15s'}}>
                 {l}{a==='historico'&&alteracoes.length>0?` (${alteracoes.length})`:''}
               </button>
             ))}
@@ -746,54 +746,54 @@ export default function AgendaPage() {
             <div style={{padding:'16px 22px',display:'flex',flexDirection:'column',gap:12}}>
               <div style={{display:'inline-flex',alignItems:'center',gap:5,background:STATUS_CONFIG[modalDetalhe.status].bg,border:`1px solid ${STATUS_CONFIG[modalDetalhe.status].border}`,borderRadius:3,padding:'4px 9px',alignSelf:'flex-start'}}>
                 <div style={{width:5,height:5,borderRadius:'50%',background:STATUS_CONFIG[modalDetalhe.status].color}}/>
-                <span style={{fontSize:10,fontFamily:'monospace',fontWeight:700,color:STATUS_CONFIG[modalDetalhe.status].color,letterSpacing:'0.1em'}}>{STATUS_CONFIG[modalDetalhe.status].label.toUpperCase()}</span>
+                <span style={{fontSize:10,fontVariantNumeric:'tabular-nums',fontWeight:700,color:STATUS_CONFIG[modalDetalhe.status].color,letterSpacing:'0.1em'}}>{STATUS_CONFIG[modalDetalhe.status].label.toUpperCase()}</span>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-                <div><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Duração</div><div style={{fontSize:12,color:'#1A1A22',fontWeight:500}}>{modalDetalhe.duracao_min} min</div></div>
-                <div><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Telefone</div><div style={{fontSize:12,color:'#1A1A22',fontWeight:500}}>{modalDetalhe.cliente?.telefone||'—'}</div></div>
+                <div><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Duração</div><div style={{fontSize:12,color:'var(--text)',fontWeight:500}}>{modalDetalhe.duracao_min} min</div></div>
+                <div><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Telefone</div><div style={{fontSize:12,color:'var(--text)',fontWeight:500}}>{modalDetalhe.cliente?.telefone||'—'}</div></div>
                 <div>
-                  <div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Valor</div>
-                  <div style={{fontFamily:'monospace',fontSize:14,fontWeight:700}}>
-                    {modalDetalhe.tem_desconto&&modalDetalhe.valor_final!=null?<><span style={{textDecoration:'line-through',color:'#9A9890',fontSize:11,marginRight:5}}>R${modalDetalhe.valor_total.toFixed(2)}</span><span style={{color:'#16A34A'}}>R${modalDetalhe.valor_final.toFixed(2)}</span></>:<span style={{color:'#B8860B'}}>R${modalDetalhe.valor_total.toFixed(2)}</span>}
+                  <div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Valor</div>
+                  <div style={{fontVariantNumeric:'tabular-nums',fontSize:14,fontWeight:700}}>
+                    {modalDetalhe.tem_desconto&&modalDetalhe.valor_final!=null?<><span style={{textDecoration:'line-through',color:'var(--faint)',fontSize:11,marginRight:5}}>R${modalDetalhe.valor_total.toFixed(2)}</span><span style={{color:'var(--ok)'}}>R${modalDetalhe.valor_final.toFixed(2)}</span></>:<span style={{color:'var(--gold)'}}>R${modalDetalhe.valor_total.toFixed(2)}</span>}
                   </div>
                 </div>
-                <div><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>E-mail</div><div style={{fontSize:11,color:'#1A1A22'}}>{modalDetalhe.cliente?.email||'—'}</div></div>
+                <div><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>E-mail</div><div style={{fontSize:11,color:'var(--text)'}}>{modalDetalhe.cliente?.email||'—'}</div></div>
               </div>
               {(modalDetalhe.servicos_ids?.length>0||modalDetalhe.servico)&&(
                 <div>
-                  <div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:5}}>Serviços</div>
+                  <div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:5}}>Serviços</div>
                   <div style={{display:'flex',flexDirection:'column',gap:3}}>
                     {modalDetalhe.servicos_ids?.length>0?servicos.filter(s=>modalDetalhe.servicos_ids.includes(s.id)).map(s=>(
-                      <div key={s.id} style={{display:'flex',justifyContent:'space-between',padding:'5px 8px',background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:3}}>
-                        <span style={{fontSize:12,color:'#1A1A22'}}>{s.nome}</span>
-                        <span style={{fontSize:11,color:'#6A6860',fontFamily:'monospace'}}>{s.duracao_min}min · R${s.preco?.toFixed(2)}</span>
+                      <div key={s.id} style={{display:'flex',justifyContent:'space-between',padding:'5px 8px',background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3}}>
+                        <span style={{fontSize:12,color:'var(--text)'}}>{s.nome}</span>
+                        <span style={{fontSize:11,color:'var(--muted)',fontVariantNumeric:'tabular-nums'}}>{s.duracao_min}min · R${s.preco?.toFixed(2)}</span>
                       </div>
                     )):modalDetalhe.servico&&(
-                      <div style={{display:'flex',justifyContent:'space-between',padding:'5px 8px',background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:3}}>
-                        <span style={{fontSize:12,color:'#1A1A22'}}>{modalDetalhe.servico.nome}</span>
-                        <span style={{fontSize:11,color:'#6A6860',fontFamily:'monospace'}}>{modalDetalhe.servico.duracao_min}min · R${modalDetalhe.servico.preco?.toFixed(2)}</span>
+                      <div style={{display:'flex',justifyContent:'space-between',padding:'5px 8px',background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3}}>
+                        <span style={{fontSize:12,color:'var(--text)'}}>{modalDetalhe.servico.nome}</span>
+                        <span style={{fontSize:11,color:'var(--muted)',fontVariantNumeric:'tabular-nums'}}>{modalDetalhe.servico.duracao_min}min · R${modalDetalhe.servico.preco?.toFixed(2)}</span>
                       </div>
                     )}
                   </div>
                 </div>
               )}
-              <div style={{background:'rgba(124,58,237,0.04)',border:'1px solid rgba(124,58,237,0.15)',borderRadius:4,padding:'11px 13px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:7}}><span style={{fontSize:11}}>💈</span><div style={{fontFamily:'monospace',fontSize:8,color:'#7C3AED',letterSpacing:'0.15em',textTransform:'uppercase',fontWeight:700}}>Extras — Oportunidades</div></div>
-                {historicoExtras.length===0?<div style={{fontSize:11,color:'#9A9890'}}>Nenhum extra registrado ainda.</div>
+              <div style={{background:'var(--combo-bg)',border:'1px solid color-mix(in srgb, var(--combo) 25%, transparent)',borderRadius:4,padding:'11px 13px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:7}}><span style={{fontSize:11}}>💈</span><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--combo)',letterSpacing:'0.15em',textTransform:'uppercase',fontWeight:700}}>Extras — Oportunidades</div></div>
+                {historicoExtras.length===0?<div style={{fontSize:11,color:'var(--faint)'}}>Nenhum extra registrado ainda.</div>
                   :historicoExtras.map(h=>{const cor=urgCor(h.dias_desde,h.dias_urgencia);const urg=h.dias_urgencia&&h.dias_desde>=h.dias_urgencia;return(
-                    <div key={h.servico_id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',marginBottom:3,background:urg?`rgba(${cor==='#DC2626'?'220,38,38':'184,134,11'},0.06)`:'#fff',border:`1px solid ${urg?cor+'40':'#E4E2DC'}`,borderRadius:3}}>
-                      <div><div style={{fontSize:12,fontWeight:600,color:'#1A1A22'}}>{h.nome}</div><div style={{fontSize:10,color:'#9A9890'}}>Última: {new Date(h.ultima_data).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}{h.dias_urgencia&&<span style={{marginLeft:4}}>· urg:{h.dias_urgencia}d</span>}</div></div>
-                      <div style={{textAlign:'right'}}><div style={{fontFamily:'monospace',fontSize:13,fontWeight:700,color:cor}}>{h.dias_desde}d{urg?' 🔴':''}</div>{urg&&<div style={{fontSize:8,color:cor,fontFamily:'monospace'}}>OFERECER!</div>}</div>
+                    <div key={h.servico_id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',marginBottom:3,background:urg?(cor==='var(--danger)'?'var(--danger-bg)':'var(--gold-soft)'):'var(--surface)',border:`1px solid ${urg?`color-mix(in srgb, ${cor} 25%, transparent)`:'var(--border)'}`,borderRadius:3}}>
+                      <div><div style={{fontSize:12,fontWeight:600,color:'var(--text)'}}>{h.nome}</div><div style={{fontSize:10,color:'var(--faint)'}}>Última: {new Date(h.ultima_data).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}{h.dias_urgencia&&<span style={{marginLeft:4}}>· urg:{h.dias_urgencia}d</span>}</div></div>
+                      <div style={{textAlign:'right'}}><div style={{fontVariantNumeric:'tabular-nums',fontSize:13,fontWeight:700,color:cor}}>{h.dias_desde}d{urg?' 🔴':''}</div>{urg&&<div style={{fontSize:8,color:cor,fontVariantNumeric:'tabular-nums'}}>OFERECER!</div>}</div>
                     </div>
                   )})
                 }
               </div>
-              {modalDetalhe.observacoes&&<div><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:3}}>Observações</div><div style={{fontSize:12,color:'#4A4840',background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:3,padding:'8px 10px'}}>{modalDetalhe.observacoes}</div></div>}
+              {modalDetalhe.observacoes&&<div><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:3}}>Observações</div><div style={{fontSize:12,color:'var(--muted)',background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3,padding:'8px 10px'}}>{modalDetalhe.observacoes}</div></div>}
               <div>
-                <div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:6}}>Alterar Status</div>
+                <div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:6}}>Alterar Status</div>
                 <div style={{display:'flex',flexWrap:'wrap',gap:5}}>
                   {(['pendente','confirmado','em_atendimento','concluido','faltou','cancelado'] as const).filter(s=>s!==modalDetalhe.status).map(s=>(
-                    <button key={s} onClick={()=>mudarStatus(modalDetalhe.id,s)} style={{padding:'5px 10px',background:STATUS_CONFIG[s].bg,border:`1px solid ${STATUS_CONFIG[s].border}`,borderRadius:3,cursor:'pointer',fontSize:10,fontFamily:'monospace',fontWeight:700,color:STATUS_CONFIG[s].color}}>{STATUS_CONFIG[s].label.toUpperCase()}</button>
+                    <button key={s} onClick={()=>mudarStatus(modalDetalhe.id,s)} style={{padding:'5px 10px',background:STATUS_CONFIG[s].bg,border:`1px solid ${STATUS_CONFIG[s].border}`,borderRadius:3,cursor:'pointer',fontSize:10,fontVariantNumeric:'tabular-nums',fontWeight:700,color:STATUS_CONFIG[s].color}}>{STATUS_CONFIG[s].label.toUpperCase()}</button>
                   ))}
                 </div>
               </div>
@@ -802,7 +802,7 @@ export default function AgendaPage() {
 
           {modalAba==='editar'&&(
             <div style={{padding:'16px 22px',display:'flex',flexDirection:'column',gap:12}}>
-              <div style={{background:'rgba(184,134,11,0.06)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:3,padding:'8px 12px',fontSize:11,color:'#8A6200'}}>Alterações ficam registradas no histórico. Motivo obrigatório.</div>
+              <div style={{background:'var(--gold-soft)',border:'1px solid var(--gold-soft)',borderRadius:3,padding:'8px 12px',fontSize:11,color:'var(--gold-dark)'}}>Alterações ficam registradas no histórico. Motivo obrigatório.</div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
                 <div><label style={labelS}>Data</label><input style={inputS} type="date" value={editForm.data} onChange={e=>setEditForm(p=>({...p,data:e.target.value}))}/></div>
                 <div><label style={labelS}>Horário</label><input style={inputS} type="time" value={editForm.hora} onChange={e=>setEditForm(p=>({...p,hora:e.target.value}))}/></div>
@@ -814,26 +814,26 @@ export default function AgendaPage() {
               </div>
               <div>
                 <label style={labelS}>Serviços</label>
-                <div style={{display:'flex',flexDirection:'column',gap:3,background:'#FAFAF7',border:'1px solid #E0DED8',borderRadius:3,padding:'7px',maxHeight:130,overflowY:'auto'}}>
+                <div style={{display:'flex',flexDirection:'column',gap:3,background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:3,padding:'7px',maxHeight:130,overflowY:'auto'}}>
                   {servicos.map(s=>{const sel=editForm.servicos_selecionados.includes(s.id);return(
-                    <div key={s.id} onClick={()=>toggleEditServico(s.id)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',borderRadius:3,cursor:'pointer',background:sel?'rgba(184,134,11,0.08)':'#fff',border:`1px solid ${sel?'#B8860B':'#E4E2DC'}`,transition:'all 0.15s'}}>
+                    <div key={s.id} onClick={()=>toggleEditServico(s.id)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 8px',borderRadius:3,cursor:'pointer',background:sel?'var(--gold-soft)':'var(--surface)',border:`1px solid ${sel?'var(--gold)':'var(--border)'}`,transition:'all 0.15s'}}>
                       <div style={{display:'flex',alignItems:'center',gap:6}}>
-                        <div style={{width:13,height:13,borderRadius:2,border:`2px solid ${sel?'#B8860B':'#C0BEB8'}`,background:sel?'#B8860B':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{sel&&<span style={{color:'#fff',fontSize:8,lineHeight:1}}>✓</span>}</div>
-                        <span style={{fontSize:12,color:'#1A1A22',fontWeight:sel?600:400}}>{s.nome}</span>
+                        <div style={{width:13,height:13,borderRadius:2,border:`2px solid ${sel?'var(--gold)':'var(--border-strong)'}`,background:sel?'var(--gold)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{sel&&<span style={{color:'var(--on-gold)',fontSize:8,lineHeight:1}}>✓</span>}</div>
+                        <span style={{fontSize:12,color:'var(--text)',fontWeight:sel?600:400}}>{s.nome}</span>
                       </div>
-                      <span style={{fontSize:10,color:'#6A6860',fontFamily:'monospace'}}>{s.duracao_min}min · R${s.preco?.toFixed(0)}</span>
+                      <span style={{fontSize:10,color:'var(--muted)',fontVariantNumeric:'tabular-nums'}}>{s.duracao_min}min · R${s.preco?.toFixed(0)}</span>
                     </div>
                   )})}
                 </div>
               </div>
               <div>
                 <label style={labelS}>Motivo *</label>
-                <textarea style={{...inputS,height:60,resize:'vertical',border:!editForm.motivo.trim()?'1px solid #DC2626':'1px solid #E0DED8'} as any} value={editForm.motivo} onChange={e=>setEditForm(p=>({...p,motivo:e.target.value}))} placeholder="Descreva o motivo (obrigatório)..."/>
-                {!editForm.motivo.trim()&&<div style={{fontSize:10,color:'#DC2626',marginTop:3}}>Campo obrigatório</div>}
+                <textarea style={{...inputS,height:60,resize:'vertical',border:!editForm.motivo.trim()?'1px solid var(--danger)':'1px solid var(--border)'} as any} value={editForm.motivo} onChange={e=>setEditForm(p=>({...p,motivo:e.target.value}))} placeholder="Descreva o motivo (obrigatório)..."/>
+                {!editForm.motivo.trim()&&<div style={{fontSize:10,color:'var(--danger)',marginTop:3}}>Campo obrigatório</div>}
               </div>
               <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
-                <button onClick={()=>setModalAba('detalhes')} style={{padding:'7px 14px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,color:'#6A6860',fontSize:12,cursor:'pointer'}}>Cancelar</button>
-                <button onClick={salvarEdicao} disabled={salvandoEdicao||!editForm.motivo.trim()} style={{padding:'7px 18px',background:!editForm.motivo.trim()?'#C0BEB8':'#B8860B',color:'#fff',border:'none',borderRadius:3,fontSize:12,fontFamily:'monospace',fontWeight:700,cursor:'pointer'}}>
+                <button onClick={()=>setModalAba('detalhes')} style={{padding:'7px 14px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,color:'var(--muted)',fontSize:12,cursor:'pointer'}}>Cancelar</button>
+                <button onClick={salvarEdicao} disabled={salvandoEdicao||!editForm.motivo.trim()} style={{padding:'7px 18px',background:!editForm.motivo.trim()?'var(--border-strong)':'var(--gold)',color:'var(--on-gold)',border:'none',borderRadius:3,fontSize:12,fontVariantNumeric:'tabular-nums',fontWeight:700,cursor:'pointer'}}>
                   {salvandoEdicao?'SALVANDO...':'SALVAR ALTERAÇÕES'}
                 </button>
               </div>
@@ -842,34 +842,34 @@ export default function AgendaPage() {
 
           {modalAba==='descontos'&&(
             <div style={{padding:'16px 22px',display:'flex',flexDirection:'column',gap:12}}>
-              <div style={{background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:4,padding:'12px 14px'}}>
+              <div style={{background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:4,padding:'12px 14px'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Valor original</div><div style={{fontFamily:'monospace',fontSize:16,fontWeight:700,color:'#1A1A22'}}>R$ {modalDetalhe.valor_total.toFixed(2)}</div></div>
-                  {descTotal>0&&<><div style={{fontSize:18,color:'#9A9890'}}>→</div><div style={{textAlign:'right'}}><div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Com desconto</div><div style={{fontFamily:'monospace',fontSize:16,fontWeight:700,color:'#16A34A'}}>R$ {(modalDetalhe.valor_final??modalDetalhe.valor_total).toFixed(2)}</div><div style={{fontSize:10,color:'#DC2626'}}>− R$ {descTotal.toFixed(2)}</div></div></>}
+                  <div><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Valor original</div><div style={{fontVariantNumeric:'tabular-nums',fontSize:16,fontWeight:700,color:'var(--text)'}}>R$ {modalDetalhe.valor_total.toFixed(2)}</div></div>
+                  {descTotal>0&&<><div style={{fontSize:18,color:'var(--faint)'}}>→</div><div style={{textAlign:'right'}}><div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:2}}>Com desconto</div><div style={{fontVariantNumeric:'tabular-nums',fontSize:16,fontWeight:700,color:'var(--ok)'}}>R$ {(modalDetalhe.valor_final??modalDetalhe.valor_total).toFixed(2)}</div><div style={{fontSize:10,color:'var(--danger)'}}>− R$ {descTotal.toFixed(2)}</div></div></>}
                 </div>
               </div>
               {descontos.length>0&&(
                 <div>
-                  <div style={{fontFamily:'monospace',fontSize:8,color:'#9A9890',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:6}}>Descontos aplicados</div>
+                  <div style={{fontVariantNumeric:'tabular-nums',fontSize:8,color:'var(--faint)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:6}}>Descontos aplicados</div>
                   {descontos.map(d=>{const srv=servicos.find(s=>s.id===d.servico_id);return(
-                    <div key={d.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 10px',marginBottom:4,background:'rgba(22,163,74,0.06)',border:'1px solid rgba(22,163,74,0.2)',borderRadius:3}}>
-                      <div><div style={{fontSize:12,fontWeight:600,color:'#1A1A22'}}>{d.modalidade==='percentual'?`${d.valor}%`:`R$ ${d.valor.toFixed(2)}`} {d.tipo==='total'?'no total':`em ${srv?.nome||'serviço'}`}</div>{d.observacao&&<div style={{fontSize:10,color:'#9A9890',marginTop:1}}>{d.observacao}</div>}</div>
-                      <button onClick={()=>removerDesconto(d.id,d)} style={{padding:'4px 8px',background:'rgba(220,38,38,0.08)',border:'1px solid rgba(220,38,38,0.2)',borderRadius:2,color:'#DC2626',fontSize:10,cursor:'pointer'}}>✕</button>
+                    <div key={d.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 10px',marginBottom:4,background:'var(--ok-bg)',border:'1px solid color-mix(in srgb, var(--ok) 30%, transparent)',borderRadius:3}}>
+                      <div><div style={{fontSize:12,fontWeight:600,color:'var(--text)'}}>{d.modalidade==='percentual'?`${d.valor}%`:`R$ ${d.valor.toFixed(2)}`} {d.tipo==='total'?'no total':`em ${srv?.nome||'serviço'}`}</div>{d.observacao&&<div style={{fontSize:10,color:'var(--faint)',marginTop:1}}>{d.observacao}</div>}</div>
+                      <button onClick={()=>removerDesconto(d.id,d)} style={{padding:'4px 8px',background:'var(--danger-bg)',border:'1px solid color-mix(in srgb, var(--danger) 30%, transparent)',borderRadius:2,color:'var(--danger)',fontSize:10,cursor:'pointer'}}>✕</button>
                     </div>
                   )})}
                 </div>
               )}
-              <div style={{background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:4,padding:'14px'}}>
-                <div style={{fontFamily:'monospace',fontSize:9,color:'#9A9890',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:10}}>Adicionar Desconto</div>
+              <div style={{background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:4,padding:'14px'}}>
+                <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:10}}>Adicionar Desconto</div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
                   <div><label style={labelS}>Aplicar em</label>
                     <div style={{display:'flex',gap:4}}>{(['total','servico'] as const).map(t=>(
-                      <button key={t} onClick={()=>setDescForm(p=>({...p,tipo:t,servico_id:''}))} style={{flex:1,padding:'6px',border:`1px solid ${descForm.tipo===t?'#B8860B':'#E4E2DC'}`,background:descForm.tipo===t?'rgba(184,134,11,0.1)':'#fff',color:descForm.tipo===t?'#B8860B':'#6A6860',borderRadius:3,fontSize:11,fontFamily:'monospace',cursor:'pointer',fontWeight:descForm.tipo===t?700:400}}>{t==='total'?'Total':'Serviço'}</button>
+                      <button key={t} onClick={()=>setDescForm(p=>({...p,tipo:t,servico_id:''}))} style={{flex:1,padding:'6px',border:`1px solid ${descForm.tipo===t?'var(--gold)':'var(--border)'}`,background:descForm.tipo===t?'var(--gold-soft)':'var(--surface)',color:descForm.tipo===t?'var(--gold)':'var(--muted)',borderRadius:3,fontSize:11,fontVariantNumeric:'tabular-nums',cursor:'pointer',fontWeight:descForm.tipo===t?700:400}}>{t==='total'?'Total':'Serviço'}</button>
                     ))}</div>
                   </div>
                   <div><label style={labelS}>Modalidade</label>
                     <div style={{display:'flex',gap:4}}>{(['percentual','reais'] as const).map(m=>(
-                      <button key={m} onClick={()=>setDescForm(p=>({...p,modalidade:m}))} style={{flex:1,padding:'6px',border:`1px solid ${descForm.modalidade===m?'#B8860B':'#E4E2DC'}`,background:descForm.modalidade===m?'rgba(184,134,11,0.1)':'#fff',color:descForm.modalidade===m?'#B8860B':'#6A6860',borderRadius:3,fontSize:11,fontFamily:'monospace',cursor:'pointer',fontWeight:descForm.modalidade===m?700:400}}>{m==='percentual'?'%':'R$'}</button>
+                      <button key={m} onClick={()=>setDescForm(p=>({...p,modalidade:m}))} style={{flex:1,padding:'6px',border:`1px solid ${descForm.modalidade===m?'var(--gold)':'var(--border)'}`,background:descForm.modalidade===m?'var(--gold-soft)':'var(--surface)',color:descForm.modalidade===m?'var(--gold)':'var(--muted)',borderRadius:3,fontSize:11,fontVariantNumeric:'tabular-nums',cursor:'pointer',fontWeight:descForm.modalidade===m?700:400}}>{m==='percentual'?'%':'R$'}</button>
                     ))}</div>
                   </div>
                 </div>
@@ -886,11 +886,11 @@ export default function AgendaPage() {
                   <div><label style={labelS}>Observação</label><input style={inputS} value={descForm.observacao} onChange={e=>setDescForm(p=>({...p,observacao:e.target.value}))} placeholder="Ex: cliente fidelidade"/></div>
                 </div>
                 {descForm.valor>0&&(
-                  <div style={{background:'rgba(22,163,74,0.06)',border:'1px solid rgba(22,163,74,0.2)',borderRadius:3,padding:'7px 10px',marginBottom:8,fontSize:11,color:'#16A34A',fontFamily:'monospace',fontWeight:600}}>
+                  <div style={{background:'var(--ok-bg)',border:'1px solid color-mix(in srgb, var(--ok) 30%, transparent)',borderRadius:3,padding:'7px 10px',marginBottom:8,fontSize:11,color:'var(--ok)',fontVariantNumeric:'tabular-nums',fontWeight:600}}>
                     {descForm.modalidade==='percentual'?`${descForm.valor}% = − R$ ${(descForm.tipo==='total'?(modalDetalhe.valor_total*(descForm.valor/100)):(servicos.find(s=>s.id===descForm.servico_id)?.preco||0)*(descForm.valor/100)).toFixed(2)}`:`R$ ${descForm.valor.toFixed(2)} de desconto`}
                   </div>
                 )}
-                <button onClick={salvarDesconto} disabled={salvandoDesc||descForm.valor<=0||(descForm.tipo==='servico'&&!descForm.servico_id)} style={{padding:'7px 16px',background:descForm.valor<=0?'#C0BEB8':'#B8860B',color:'#fff',border:'none',borderRadius:3,fontSize:11,fontFamily:'monospace',fontWeight:700,cursor:'pointer'}}>
+                <button onClick={salvarDesconto} disabled={salvandoDesc||descForm.valor<=0||(descForm.tipo==='servico'&&!descForm.servico_id)} style={{padding:'7px 16px',background:descForm.valor<=0?'var(--border-strong)':'var(--gold)',color:'var(--on-gold)',border:'none',borderRadius:3,fontSize:11,fontVariantNumeric:'tabular-nums',fontWeight:700,cursor:'pointer'}}>
                   {salvandoDesc?'APLICANDO...':'APLICAR DESCONTO'}
                 </button>
               </div>
@@ -900,24 +900,24 @@ export default function AgendaPage() {
           {modalAba==='historico'&&(
             <div style={{padding:'16px 22px',display:'flex',flexDirection:'column',gap:8}}>
               {alteracoes.length===0?(
-                <div style={{textAlign:'center',padding:'40px 0',color:'#9A9890',fontSize:13}}>Nenhuma alteração registrada ainda.</div>
+                <div style={{textAlign:'center',padding:'40px 0',color:'var(--faint)',fontSize:13}}>Nenhuma alteração registrada ainda.</div>
               ):alteracoes.map(a=>(
-                <div key={a.id} style={{background:'#FAFAF7',border:'1px solid #E4E2DC',borderRadius:4,padding:'12px 14px'}}>
+                <div key={a.id} style={{background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:4,padding:'12px 14px'}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:6}}>
-                    <div style={{fontFamily:'monospace',fontSize:9,color:a.campo_alterado.includes('removido')?'#DC2626':'#9A9890',letterSpacing:'0.1em',textTransform:'uppercase'}}>{a.campo_alterado}</div>
-                    <div style={{fontFamily:'monospace',fontSize:9,color:'#9A9890'}}>{new Date(a.alterado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})} {new Date(a.alterado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+                    <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:a.campo_alterado.includes('removido')?'var(--danger)':'var(--faint)',letterSpacing:'0.1em',textTransform:'uppercase'}}>{a.campo_alterado}</div>
+                    <div style={{fontVariantNumeric:'tabular-nums',fontSize:9,color:'var(--faint)'}}>{new Date(a.alterado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})} {new Date(a.alterado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
                   </div>
-                  {a.valor_anterior&&a.valor_novo&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6,fontSize:12}}><span style={{color:'#DC2626',background:'rgba(220,38,38,0.06)',border:'1px solid rgba(220,38,38,0.15)',borderRadius:2,padding:'2px 7px',textDecoration:'line-through'}}>{a.valor_anterior}</span><span style={{color:'#9A9890'}}>→</span><span style={{color:'#16A34A',background:'rgba(22,163,74,0.06)',border:'1px solid rgba(22,163,74,0.15)',borderRadius:2,padding:'2px 7px'}}>{a.valor_novo}</span></div>)}
-                  {!a.valor_anterior&&a.valor_novo&&<div style={{marginBottom:6,fontSize:12,color:'#16A34A',background:'rgba(22,163,74,0.06)',border:'1px solid rgba(22,163,74,0.15)',borderRadius:2,padding:'3px 8px',display:'inline-block'}}>+ {a.valor_novo}</div>}
-                  {a.valor_anterior&&!a.valor_novo&&<div style={{marginBottom:6,fontSize:12,color:'#DC2626',background:'rgba(220,38,38,0.06)',border:'1px solid rgba(220,38,38,0.15)',borderRadius:2,padding:'3px 8px',display:'inline-block'}}>− {a.valor_anterior}</div>}
-                  <div style={{fontSize:11,color:'#4A4840',fontStyle:'italic'}}>"{a.motivo}"</div>
+                  {a.valor_anterior&&a.valor_novo&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6,fontSize:12}}><span style={{color:'var(--danger)',background:'var(--danger-bg)',border:'1px solid color-mix(in srgb, var(--danger) 25%, transparent)',borderRadius:2,padding:'2px 7px',textDecoration:'line-through'}}>{a.valor_anterior}</span><span style={{color:'var(--faint)'}}>→</span><span style={{color:'var(--ok)',background:'var(--ok-bg)',border:'1px solid color-mix(in srgb, var(--ok) 25%, transparent)',borderRadius:2,padding:'2px 7px'}}>{a.valor_novo}</span></div>)}
+                  {!a.valor_anterior&&a.valor_novo&&<div style={{marginBottom:6,fontSize:12,color:'var(--ok)',background:'var(--ok-bg)',border:'1px solid color-mix(in srgb, var(--ok) 25%, transparent)',borderRadius:2,padding:'3px 8px',display:'inline-block'}}>+ {a.valor_novo}</div>}
+                  {a.valor_anterior&&!a.valor_novo&&<div style={{marginBottom:6,fontSize:12,color:'var(--danger)',background:'var(--danger-bg)',border:'1px solid color-mix(in srgb, var(--danger) 25%, transparent)',borderRadius:2,padding:'3px 8px',display:'inline-block'}}>− {a.valor_anterior}</div>}
+                  <div style={{fontSize:11,color:'var(--muted)',fontStyle:'italic'}}>"{a.motivo}"</div>
                 </div>
               ))}
             </div>
           )}
 
-          <div style={{padding:'11px 22px',borderTop:'1px solid #F0EEE8',display:'flex',justifyContent:'flex-end'}}>
-            <button onClick={()=>{setModalDetalhe(null);setHistoricoExtras([]);setAlteracoes([]);setDescontos([])}} style={{padding:'7px 16px',background:'#fff',border:'1px solid #E0DED8',borderRadius:3,color:'#6A6860',fontSize:12,cursor:'pointer'}}>Fechar</button>
+          <div style={{padding:'11px 22px',borderTop:'1px solid var(--border)',display:'flex',justifyContent:'flex-end'}}>
+            <button onClick={()=>{setModalDetalhe(null);setHistoricoExtras([]);setAlteracoes([]);setDescontos([])}} style={{padding:'7px 16px',background:'var(--surface)',border:'1px solid var(--border)',borderRadius:3,color:'var(--muted)',fontSize:12,cursor:'pointer'}}>Fechar</button>
           </div>
         </Modal>
       )}

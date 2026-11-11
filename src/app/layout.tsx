@@ -9,12 +9,18 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0A0A0C',
+  themeColor: '#121212',
 }
+
+// Aplica o tema salvo antes da página aparecer (evita piscar). Sem escolha salva = escuro.
+const SCRIPT_TEMA = `try{var t=localStorage.getItem('barberos_tema');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme','dark')}}catch(e){document.documentElement.setAttribute('data-theme','dark')}`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
+      </head>
       <body>{children}</body>
     </html>
   )

@@ -65,7 +65,7 @@ export default function FinanceiroPage() {
   const tituloMes = mes.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
   return (
-    <div style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div>
       <div className="page-header">
         <div>
           <div className="eyebrow">Financeiro</div>
@@ -73,15 +73,15 @@ export default function FinanceiroPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button className="btn btn-sm" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))}>‹</button>
-          <span style={{ minWidth: 140, textAlign: 'center', fontFamily: "'Space Mono', monospace", fontSize: 12, textTransform: 'capitalize' }}>{tituloMes}</span>
+          <span style={{ minWidth: 140, textAlign: 'center', fontVariantNumeric: 'tabular-nums', fontSize: 12, textTransform: 'capitalize' }}>{tituloMes}</span>
           <button className="btn btn-sm" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))}>›</button>
         </div>
       </div>
 
       <div className="page-body">
         <div className="stat-grid">
-          <div className="stat-card"><div className="stat-label">Faturado</div><div className="stat-value" style={{ fontSize: 22, color: '#16A34A' }}>{brl(faturado)}</div></div>
-          <div className="stat-card"><div className="stat-label">Previsto</div><div className="stat-value" style={{ fontSize: 22, color: '#B8860B' }}>{brl(previsto)}</div></div>
+          <div className="stat-card"><div className="stat-label">Faturado</div><div className="stat-value" style={{ fontSize: 22, color: 'var(--ok)' }}>{brl(faturado)}</div></div>
+          <div className="stat-card"><div className="stat-label">Previsto</div><div className="stat-value" style={{ fontSize: 22, color: 'var(--gold)' }}>{brl(previsto)}</div></div>
           <div className="stat-card"><div className="stat-label">Atendimentos</div><div className="stat-value">{concluidos.length}</div></div>
           <div className="stat-card"><div className="stat-label">Ticket médio</div><div className="stat-value" style={{ fontSize: 22 }}>{brl(ticket)}</div></div>
           <div className="stat-card"><div className="stat-label">Cancelados / faltas</div><div className="stat-value">{perdidos.length}</div></div>
@@ -94,17 +94,17 @@ export default function FinanceiroPage() {
             <div className="card" style={{ padding: 20 }}>
               <div className="eyebrow" style={{ marginBottom: 14 }}>Por barbeiro</div>
               {porBarbeiro.length === 0 ? (
-                <p style={{ fontSize: 12, color: '#9A9890' }}>Nenhum atendimento concluído neste mês.</p>
+                <p style={{ fontSize: 12, color: 'var(--faint)' }}>Nenhum atendimento concluído neste mês.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {porBarbeiro.map(b => (
                     <div key={b.nome}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
                         <span style={{ fontWeight: 600 }}>{b.nome}</span>
-                        <span style={{ fontFamily: "'Space Mono', monospace", color: '#6A6860' }}>{brl(b.total)} · {b.qtd}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--muted)' }}>{brl(b.total)} · {b.qtd}</span>
                       </div>
-                      <div style={{ height: 5, background: '#F0EEE8', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ width: `${(b.total / maior) * 100}%`, height: '100%', background: '#B8860B' }} />
+                      <div style={{ height: 5, background: 'var(--input-bg)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ width: `${(b.total / maior) * 100}%`, height: '100%', background: 'var(--gold)' }} />
                       </div>
                     </div>
                   ))}
@@ -115,19 +115,19 @@ export default function FinanceiroPage() {
             <div className="card" style={{ padding: 20 }}>
               <div className="eyebrow" style={{ marginBottom: 14 }}>Atendimentos concluídos</div>
               {concluidos.length === 0 ? (
-                <p style={{ fontSize: 12, color: '#9A9890' }}>Nada por aqui ainda.</p>
+                <p style={{ fontSize: 12, color: 'var(--faint)' }}>Nada por aqui ainda.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 440, overflowY: 'auto' }}>
                   {concluidos.map(a => (
-                    <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid #F0EEE8' }}>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: '#9A9890', width: 78 }}>
+                    <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid var(--border)' }}>
+                      <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'var(--faint)', width: 78 }}>
                         {new Date(a.data_hora).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} {new Date(a.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.cliente?.nome || 'Cliente'}</div>
-                        <div style={{ fontSize: 11, color: '#9A9890' }}>✂ {a.barbeiro?.nome || '—'}</div>
+                        <div style={{ fontSize: 11, color: 'var(--faint)' }}>✂ {a.barbeiro?.nome || '—'}</div>
                       </div>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700, color: '#16A34A' }}>{brl(valorDe(a))}</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 13, fontWeight: 700, color: 'var(--ok)' }}>{brl(valorDe(a))}</span>
                     </div>
                   ))}
                 </div>

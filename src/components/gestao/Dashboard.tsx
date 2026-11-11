@@ -109,7 +109,7 @@ export default function Dashboard() {
   const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div style={{ color: '#1A1A22', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ color: 'var(--text)' }}>
 
       {/* HEADER */}
       <div className="page-header">
@@ -119,44 +119,44 @@ export default function Dashboard() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: '#B8860B', letterSpacing: '0.05em', marginRight: 4 }}>
+          <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: 18, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.05em', marginRight: 4 }}>
             {hora}
           </div>
 
           {perfis.map(p => (
             <button key={p.id} onClick={() => trocarPerfil(p.id)} style={{
               padding: '5px 12px',
-              background: perfilAtivoId === p.id ? 'rgba(184,134,11,0.1)' : 'transparent',
-              border: `1px solid ${perfilAtivoId === p.id ? '#B8860B' : '#D8D6D0'}`,
-              borderRadius: 3, cursor: 'pointer',
-              color: perfilAtivoId === p.id ? '#8A6200' : '#6A6860',
-              fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: '0.05em',
+              background: perfilAtivoId === p.id ? 'var(--gold-soft)' : 'transparent',
+              border: `1px solid ${perfilAtivoId === p.id ? 'var(--gold)' : 'var(--border-strong)'}`,
+              borderRadius: 8, cursor: 'pointer',
+              color: perfilAtivoId === p.id ? 'var(--gold)' : 'var(--muted)',
+              fontSize: 12,
               display: 'flex', alignItems: 'center', gap: 5,
             }}>
               {p.nome}
               {p.id !== 'padrao' && (
                 <span onClick={e => { e.stopPropagation(); excluirPerfil(p.id) }}
-                  style={{ color: '#B0AEA8', fontSize: 9 }}>✕</span>
+                  style={{ color: 'var(--faint)', fontSize: 9 }}>✕</span>
               )}
             </button>
           ))}
 
           <button onClick={() => setEditando(!editando)} style={{
             padding: '6px 14px',
-            background: editando ? 'rgba(184,134,11,0.1)' : '#FFFFFF',
-            border: `1px solid ${editando ? '#B8860B' : '#D8D6D0'}`,
-            borderRadius: 3, cursor: 'pointer',
-            color: editando ? '#8A6200' : '#4A4840',
-            fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: '0.08em',
+            background: editando ? 'var(--gold-soft)' : 'var(--surface)',
+            border: `1px solid ${editando ? 'var(--gold)' : 'var(--border-strong)'}`,
+            borderRadius: 8, cursor: 'pointer',
+            color: editando ? 'var(--gold)' : 'var(--muted)',
+            fontSize: 12,
           }}>
-            {editando ? '✕ FECHAR' : '◈ PERSONALIZAR'}
+            {editando ? '✕ Fechar' : '◈ Personalizar'}
           </button>
         </div>
       </div>
 
       {/* PAINEL EDIÇÃO */}
       {editando && (
-        <div style={{ background: '#FAFAF7', borderBottom: '1px solid #E0DED8', padding: '20px 28px' }}>
+        <div style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', padding: '20px 28px' }}>
           <div className="eyebrow" style={{ marginBottom: 14 }}>
             Selecione os widgets — clique para ativar/desativar
           </div>
@@ -166,15 +166,15 @@ export default function Dashboard() {
               return (
                 <button key={w.id} onClick={() => toggleWidget(w.id)} style={{
                   padding: '8px 14px',
-                  background: ativo ? 'rgba(184,134,11,0.08)' : '#FFFFFF',
-                  border: `1px solid ${ativo ? '#B8860B' : '#D8D6D0'}`,
-                  borderRadius: 4, cursor: 'pointer',
-                  color: ativo ? '#8A6200' : '#6A6860',
-                  fontSize: 11,
+                  background: ativo ? 'var(--gold-soft)' : 'var(--surface)',
+                  border: `1px solid ${ativo ? 'var(--gold)' : 'var(--border-strong)'}`,
+                  borderRadius: 8, cursor: 'pointer',
+                  color: ativo ? 'var(--gold)' : 'var(--muted)',
+                  fontSize: 12,
                   display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left',
                 }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>{ativo ? '◉' : '○'} {w.label}</span>
-                  <span style={{ fontSize: 10, color: ativo ? '#A08040' : '#9A9890' }}>{w.descricao}</span>
+                  <span style={{ fontWeight: 600 }}>{ativo ? '◉' : '○'} {w.label}</span>
+                  <span style={{ fontSize: 10, color: ativo ? 'var(--gold-dark)' : 'var(--faint)' }}>{w.descricao}</span>
                 </button>
               )
             })}
@@ -184,7 +184,7 @@ export default function Dashboard() {
               SALVAR &quot;{perfilAtivo?.nome?.toUpperCase()}&quot;
             </button>
             {!salvandoNovo ? (
-              <button onClick={() => setSalvandoNovo(true)} className="btn" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>
+              <button onClick={() => setSalvandoNovo(true)} className="btn" style={{ fontSize: 11 }}>
                 + NOVO PERFIL
               </button>
             ) : (
@@ -206,7 +206,7 @@ export default function Dashboard() {
       <div style={{ padding: '20px 28px 48px', maxWidth: 1400, margin: '0 auto' }}>
         {widgetsExibidos.length === 0 ? (
           <div className="empty-state" style={{ minHeight: 360, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-            <span style={{ fontSize: 40, color: '#D8D6D0' }}>⬡</span>
+            <span style={{ fontSize: 40, color: 'var(--border-strong)' }}>⬡</span>
             <p style={{ fontSize: 13, textAlign: 'center', lineHeight: 1.7 }}>
               Nenhum widget selecionado.<br />Clique em Personalizar para adicionar.
             </p>

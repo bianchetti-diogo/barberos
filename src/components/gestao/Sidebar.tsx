@@ -4,66 +4,71 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { modulosDoPapel, rotaDoModulo } from '@/modules/registry'
+import LogoBarberOS from '@/components/brand/LogoBarberOS'
+import Icon from '@/components/ui/Icon'
+import BotaoTema from '@/components/ui/BotaoTema'
 
-const GRUPOS = [
+interface ItemMenu { id: string; label: string; icon: string; rota: string; ativo: boolean }
+interface GrupoMenu { label: string; itens: ItemMenu[] }
+
+const GRUPOS: GrupoMenu[] = [
   {
     label: 'Administração',
     itens: [
-      { id: 'dashboard',     label: 'Dashboard',    icon: '⬡', rota: '/gestao',               ativo: true },
-      { id: 'barbeiros',     label: 'Barbeiros',    icon: '✂', rota: '/gestao/barbeiros',      ativo: true },
-      { id: 'servicos',      label: 'Serviços',     icon: '◈', rota: '/gestao/servicos',       ativo: true },
-      { id: 'produtos',      label: 'Produtos',     icon: '◉', rota: '/gestao/produtos',       ativo: true },
-      { id: 'clientes',      label: 'Clientes',     icon: '◎', rota: '/gestao/clientes',       ativo: true },
-      { id: 'configuracoes', label: 'Configurações',icon: '◌', rota: '/gestao/configuracoes',  ativo: true },
+      { id: 'dashboard',     label: 'Dashboard',     icon: 'painel',        rota: '/gestao',               ativo: true },
+      { id: 'barbeiros',     label: 'Barbeiros',     icon: 'barbeiros',     rota: '/gestao/barbeiros',     ativo: true },
+      { id: 'servicos',      label: 'Serviços',      icon: 'servicos',      rota: '/gestao/servicos',      ativo: true },
+      { id: 'produtos',      label: 'Produtos',      icon: 'produtos',      rota: '/gestao/produtos',      ativo: true },
+      { id: 'clientes',      label: 'Clientes',      icon: 'clientes',      rota: '/gestao/clientes',      ativo: true },
+      { id: 'configuracoes', label: 'Configurações', icon: 'configuracoes', rota: '/gestao/configuracoes', ativo: true },
     ],
   },
   {
     label: 'Operação',
     itens: [
-      { id: 'agenda',    label: 'Agenda',    icon: '▦', rota: '/gestao/agenda',    ativo: true },
+      { id: 'agenda', label: 'Agenda', icon: 'agenda', rota: '/gestao/agenda', ativo: true },
     ],
   },
   {
     label: 'Financeiro',
     itens: [
-      { id: 'financeiro', label: 'Faturamento', icon: '◈', rota: '/gestao/financeiro', ativo: true },
-      { id: 'relatorios', label: 'Relatórios',  icon: '▤', rota: '/gestao/relatorios', ativo: false },
+      { id: 'financeiro', label: 'Faturamento', icon: 'financeiro', rota: '/gestao/financeiro', ativo: true },
+      { id: 'relatorios', label: 'Relatórios',  icon: 'relatorios', rota: '/gestao/relatorios', ativo: false },
     ],
   },
 ]
 
-interface Props { onFixadaChange?: (fixada: boolean) => void }
+const CHAVE_MENU = 'barberos_menu_recolhido'
 
-export default function Sidebar({ onFixadaChange }: Props) {
-  const [fixada, setFixada] = useState(false)
-  const [aberta, setAberta] = useState(false)
+export default function Sidebar() {
+  const [recolhida, setRecolhida] = useState(false)
   const [logo, setLogo] = useState<string | null>(null)
-  const [nome, setNome] = useState('BARBEROS')
+  const [nome, setNome] = useState('Barbearia')
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
 
   useEffect(() => {
-    const logoSalva = localStorage.getItem('barberos_logo')
-    const nomeSalvo = localStorage.getItem('barberos_nome')
-    if (logoSalva) setLogo(logoSalva)
-    if (nomeSalvo) setNome(nomeSalvo)
+    try {
+      if (localStorage.getItem(CHAVE_MENU) === '1') setRecolhida(true)
+      const logoSalva = localStorage.getItem('barberos_logo')
+      if (logoSalva) setLogo(logoSalva)
+    } catch { /* sem armazenamento */ }
     // O nome da barbearia vem do banco, assim todos os usuários veem o mesmo
     supabase.from('barbearias').select('nome').limit(1).maybeSingle().then(({ data }) => {
-      if (data?.nome) setNome(String(data.nome).toUpperCase())
+      if (data?.nome) setNome(String(data.nome))
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function toggleFixada() {
-    const novo = !fixada
-    setFixada(novo)
-    setAberta(false)
-    onFixadaChange?.(novo)
+  function alternarRecolhida() {
+    const novo = !recolhida
+    setRecolhida(novo)
+    try { localStorage.setItem(CHAVE_MENU, novo ? '1' : '0') } catch { /* ignora */ }
   }
 
-  const largura = (fixada || aberta) ? 240 : 56
-
+  // Provisório: o logo da barbearia vai para o Storage nas Configurações (roadmap F2-11)
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -71,7 +76,7 @@ export default function Sidebar({ onFixadaChange }: Props) {
     reader.onload = ev => {
       const url = ev.target?.result as string
       setLogo(url)
-      localStorage.setItem('barberos_logo', url)
+      try { localStorage.setItem('barberos_logo', url) } catch { /* ignora */ }
     }
     reader.readAsDataURL(file)
   }
@@ -81,10 +86,8 @@ export default function Sidebar({ onFixadaChange }: Props) {
     router.push('/auth/login')
   }
 
-  const expandido = fixada || aberta
-
   // Módulos instalados (src/modules/registry.ts) entram no menu sozinhos, em grupos próprios
-  const gruposModulos: typeof GRUPOS = []
+  const gruposModulos: GrupoMenu[] = []
   modulosDoPapel('gestao').forEach(m => {
     const nomeGrupo = m.grupo || 'Módulos'
     let grupo = gruposModulos.find(g => g.label === nomeGrupo)
@@ -103,94 +106,67 @@ export default function Sidebar({ onFixadaChange }: Props) {
   const todosGrupos = [...GRUPOS, ...gruposModulos]
 
   return (
-    <>
-      {aberta && !fixada && (
-        <div onClick={() => setAberta(false)} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} />
-      )}
-
-      <aside
-        onMouseEnter={() => !fixada && setAberta(true)}
-        onMouseLeave={() => !fixada && setAberta(false)}
-        style={{
-          position: fixada ? 'relative' : 'fixed',
-          top: 0, left: 0, height: '100vh',
-          width: largura,
-          background: '#0A0A0C',
-          borderRight: '1px solid #1E1E24',
-          display: 'flex', flexDirection: 'column',
-          transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1)',
-          overflow: 'hidden',
-          zIndex: 50,
-          flexShrink: 0,
-        }}
-      >
-        {/* LOGO */}
-        <div style={{ padding: '18px 10px 14px', borderBottom: '1px solid #1E1E24', display: 'flex', alignItems: 'center', gap: 10, minHeight: 68, overflow: 'hidden' }}>
-          <div onClick={() => fileRef.current?.click()} title="Trocar logo" style={{ width: 36, height: 36, borderRadius: 4, background: logo ? 'transparent' : '#1A1A1E', border: `1px solid ${logo ? 'transparent' : '#2A2A30'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, overflow: 'hidden' }}>
-            {logo ? <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 16, color: '#B8860B' }}>✦</span>}
+    <aside className={`sidebar${recolhida ? ' recolhida' : ''}`}>
+      <div className="sidebar-topo">
+        <LogoBarberOS tamanho={34} />
+        {!recolhida && (
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>BarberOS</div>
+            <div style={{ fontSize: 11, color: 'var(--faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</div>
           </div>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
-          {expandido && (
-            <div style={{ overflow: 'hidden', flex: 1 }}>
-              <div style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#B8860B', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>{nome}</div>
-              <div style={{ fontSize: 9, color: '#55555F', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 1 }}>Gestão</div>
-            </div>
-          )}
-        </div>
+        )}
+        {!recolhida && (
+          <>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              data-tip="Logo da barbearia (clique para trocar)"
+              style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--border-strong)', background: 'var(--surface-2)', cursor: 'pointer', overflow: 'hidden', padding: 0, color: 'var(--faint)', fontSize: 11, flexShrink: 0 }}
+            >
+              {logo ? <img src={logo} alt="Logo da barbearia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '+'}
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
+          </>
+        )}
+      </div>
 
-        {/* NAV */}
-        <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto', overflowX: 'hidden' }}>
-          {todosGrupos.map((grupo, gi) => (
-            <div key={gi}>
-              {expandido && (
-                <div style={{ padding: '12px 14px 4px', fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.18em', color: '#3A3A42', textTransform: 'uppercase' }}>{grupo.label}</div>
-              )}
-              {!expandido && gi > 0 && <div style={{ height: 1, background: '#1E1E24', margin: '6px 10px' }} />}
-              {grupo.itens.map(mod => {
-                const isAtivo = pathname === mod.rota || (mod.rota !== '/gestao' && pathname.startsWith(mod.rota))
-                return (
-                  <button
-                    key={mod.id}
-                    onClick={() => mod.ativo && router.push(mod.rota)}
-                    title={!expandido ? mod.label : undefined}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center',
-                      gap: 10, padding: expandido ? '10px 16px' : '10px 0',
-                      justifyContent: expandido ? 'flex-start' : 'center',
-                      background: isAtivo ? 'rgba(184,134,11,0.12)' : 'transparent',
-                      border: 'none', borderLeft: expandido ? `2px solid ${isAtivo ? '#B8860B' : 'transparent'}` : 'none',
-                      color: isAtivo ? '#D4A017' : mod.ativo ? '#7A7A85' : '#3A3A42',
-                      cursor: mod.ativo ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.15s', textAlign: 'left',
-                      whiteSpace: 'nowrap', overflow: 'hidden',
-                    }}
-                  >
-                    <span style={{ fontSize: 15, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>{mod.icon}</span>
-                    {expandido && (
-                      <span style={{ fontSize: 12, fontWeight: isAtivo ? 600 : 400, letterSpacing: '0.01em' }}>
-                        {mod.label}
-                        {!mod.ativo && <span style={{ fontSize: 8, color: '#3A3A42', marginLeft: 6, letterSpacing: '0.1em' }}>EM BREVE</span>}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
+      <nav className="sidebar-nav">
+        {todosGrupos.map(grupo => (
+          <div key={grupo.label}>
+            <div className="sidebar-grupo">{grupo.label}</div>
+            {grupo.itens.map(item => {
+              const isAtivo = pathname === item.rota || (item.rota !== '/gestao' && pathname.startsWith(item.rota))
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`sidebar-item${isAtivo ? ' ativo' : ''}${item.ativo ? '' : ' desativado'}`}
+                  onClick={() => item.ativo && router.push(item.rota)}
+                  title={recolhida ? item.label : undefined}
+                >
+                  <span className="ic"><Icon nome={item.icon} /></span>
+                  <span className="sidebar-texto">
+                    {item.label}
+                    {!item.ativo && <span style={{ fontSize: 9, color: 'var(--faint)', marginLeft: 6, letterSpacing: '0.08em' }}>EM BREVE</span>}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        ))}
+      </nav>
 
-        {/* FOOTER */}
-        <div style={{ padding: '8px 0', borderTop: '1px solid #1E1E24' }}>
-          <button onClick={toggleFixada} title={fixada ? 'Soltar sidebar' : 'Fixar sidebar'} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: expandido ? '9px 16px' : '9px 0', justifyContent: expandido ? 'flex-start' : 'center', background: 'transparent', border: 'none', color: fixada ? '#B8860B' : '#55555F', cursor: 'pointer', transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <span style={{ fontSize: 14, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>{fixada ? '◀' : '▶'}</span>
-            {expandido && <span style={{ fontSize: 11, letterSpacing: '0.05em' }}>{fixada ? 'Soltar painel' : 'Fixar painel'}</span>}
-          </button>
-          <button onClick={handleLogout} title="Sair" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: expandido ? '9px 16px' : '9px 0', justifyContent: expandido ? 'flex-start' : 'center', background: 'transparent', border: 'none', color: '#55555F', cursor: 'pointer', transition: 'color 0.15s', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <span style={{ fontSize: 14, flexShrink: 0, width: expandido ? 18 : 'auto', textAlign: 'center' }}>⎋</span>
-            {expandido && <span style={{ fontSize: 11, letterSpacing: '0.05em' }}>Sair</span>}
-          </button>
-        </div>
-      </aside>
-    </>
+      <div className="sidebar-rodape">
+        <button type="button" className="sidebar-item sidebar-recolher" onClick={alternarRecolhida} title={recolhida ? 'Expandir menu' : 'Recolher menu'}>
+          <span className="ic"><Icon nome="recolher" /></span>
+          <span className="sidebar-texto">{recolhida ? 'Expandir' : 'Recolher'}</span>
+        </button>
+        <BotaoTema />
+        <button type="button" className="sidebar-item" onClick={handleLogout} title="Sair">
+          <span className="ic"><Icon nome="sair" /></span>
+          <span className="sidebar-texto">Sair</span>
+        </button>
+      </div>
+    </aside>
   )
 }

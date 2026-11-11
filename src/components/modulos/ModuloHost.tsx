@@ -21,7 +21,7 @@ class LimiteDeErro extends Component<{ nome: string; children: ReactNode }, { er
       return (
         <div className="empty-state" style={{ margin: 24 }}>
           <div style={{ fontSize: 28, marginBottom: 8 }}>⚠</div>
-          <p style={{ fontSize: 14, color: '#4A4840', marginBottom: 4 }}>O módulo “{this.props.nome}” encontrou um problema.</p>
+          <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 4 }}>O módulo “{this.props.nome}” encontrou um problema.</p>
           <p style={{ fontSize: 12 }}>O restante do sistema segue normal. Detalhe: {this.state.erro.message}</p>
         </div>
       )
@@ -37,8 +37,8 @@ function Carregando() {
 function Aviso({ icone, titulo, texto, voltar }: { icone: string; titulo: string; texto: string; voltar: string }) {
   return (
     <div className="empty-state" style={{ margin: 24 }}>
-      <div style={{ fontSize: 30, marginBottom: 8, color: '#D8D6D0' }}>{icone}</div>
-      <p style={{ fontSize: 14, color: '#4A4840', marginBottom: 4 }}>{titulo}</p>
+      <div style={{ fontSize: 30, marginBottom: 8, color: 'var(--border-strong)' }}>{icone}</div>
+      <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 4 }}>{titulo}</p>
       <p style={{ fontSize: 12, marginBottom: 16 }}>{texto}</p>
       <Link href={voltar} className="btn">← Voltar</Link>
     </div>

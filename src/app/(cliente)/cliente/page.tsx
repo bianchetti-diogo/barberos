@@ -20,12 +20,12 @@ interface Agendamento {
 }
 
 const STATUS: Record<Status, { label: string; cor: string; bg: string }> = {
-  pendente:       { label: 'Aguardando confirmação', cor: '#B8860B', bg: 'rgba(184,134,11,0.10)' },
-  confirmado:     { label: 'Confirmado',             cor: '#0369A1', bg: 'rgba(3,105,161,0.10)' },
-  em_atendimento: { label: 'Em atendimento',         cor: '#7C3AED', bg: 'rgba(124,58,237,0.10)' },
-  concluido:      { label: 'Concluído',              cor: '#16A34A', bg: 'rgba(22,163,74,0.10)' },
-  cancelado:      { label: 'Cancelado',              cor: '#9A9890', bg: 'rgba(154,152,144,0.10)' },
-  faltou:         { label: 'Não compareceu',         cor: '#DC2626', bg: 'rgba(220,38,38,0.08)' },
+  pendente:       { label: 'Aguardando confirmação', cor: 'var(--warn)',   bg: 'var(--warn-bg)' },
+  confirmado:     { label: 'Confirmado',             cor: 'var(--info)',   bg: 'var(--info-bg)' },
+  em_atendimento: { label: 'Em atendimento',         cor: 'var(--gold)',   bg: 'var(--gold-soft)' },
+  concluido:      { label: 'Concluído',              cor: 'var(--ok)',     bg: 'var(--ok-bg)' },
+  cancelado:      { label: 'Cancelado',              cor: 'var(--danger)', bg: 'var(--danger-bg)' },
+  faltou:         { label: 'Não compareceu',         cor: 'var(--danger)', bg: 'var(--danger-bg)' },
 }
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -195,7 +195,7 @@ export default function ClientePage() {
     return (
       <div className="empty-state">
         <div style={{ fontSize: 32, marginBottom: 10 }}>◎</div>
-        <p style={{ fontSize: 14, color: '#4A4840' }}>Não encontramos seu cadastro de cliente.</p>
+        <p style={{ fontSize: 14, color: 'var(--muted)' }}>Não encontramos seu cadastro de cliente.</p>
         <p style={{ fontSize: 12, marginTop: 4 }}>Fale com a barbearia para vincular sua conta.</p>
       </div>
     )
@@ -207,18 +207,18 @@ export default function ClientePage() {
     return (
       <div key={a.id} className="card" style={{ padding: '14px 18px', borderLeft: `4px solid ${st.cor}`, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ minWidth: 92 }}>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: '#1A1A22' }}>
+          <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
             {dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
           </div>
-          <div style={{ fontSize: 11, color: '#6A6860' }}>{dt.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</div>
+          <div style={{ fontSize: 11, color: 'var(--muted)' }}>{dt.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</div>
         </div>
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1A22' }}>{nomesServicos(a)}</div>
-          <div style={{ fontSize: 11, color: '#9A9890', marginTop: 2 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{nomesServicos(a)}</div>
+          <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 2 }}>
             {a.barbeiro?.nome ? `✂ ${a.barbeiro.nome} · ` : ''}{a.duracao_min} min · {brl(Number(a.valor_final ?? a.valor_total ?? 0))}
           </div>
         </div>
-        <span className="badge" style={{ color: st.cor, background: st.bg, borderColor: st.cor + '33' }}>{st.label.toUpperCase()}</span>
+        <span className="badge" style={{ color: st.cor, background: st.bg }}>{st.label.toUpperCase()}</span>
         {permiteCancelar && (a.status === 'pendente' || a.status === 'confirmado') && (
           <button className="btn btn-sm btn-danger" onClick={() => cancelar(a)}>Cancelar</button>
         )}
@@ -237,30 +237,30 @@ export default function ClientePage() {
       </div>
 
       {aviso && (
-        <div role="status" style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.25)', color: '#16A34A', borderRadius: 4, fontSize: 13, padding: '10px 14px', marginBottom: 16 }}>
+        <div role="status" style={{ background: 'var(--ok-bg)', border: '1px solid var(--ok)', color: 'var(--ok)', borderRadius: 8, fontSize: 13, padding: '10px 14px', marginBottom: 16 }}>
           ✓ {aviso}
         </div>
       )}
 
       {/* PRÓXIMO HORÁRIO EM DESTAQUE */}
       {proximo ? (
-        <div style={{ background: '#0A0A0C', color: '#fff', borderRadius: 8, padding: '20px 24px', marginBottom: 24, display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap', boxShadow: 'var(--shadow-md)' }}>
+        <div className="card" style={{ borderColor: 'var(--gold)', color: 'var(--text)', padding: '20px 24px', marginBottom: 24, display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap', boxShadow: 'var(--shadow-md)' }}>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, letterSpacing: '0.2em', color: '#B8860B', textTransform: 'uppercase', marginBottom: 6 }}>Seu próximo horário</div>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.2em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}>Seu próximo horário</div>
             <div style={{ fontSize: 22, fontWeight: 700 }}>
               {new Date(proximo.data_hora).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })} às {new Date(proximo.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </div>
-            <div style={{ fontSize: 13, color: '#9A9AA5', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
               {nomesServicos(proximo)}{proximo.barbeiro?.nome ? ` · com ${proximo.barbeiro.nome}` : ''}
             </div>
           </div>
-          <span className="badge" style={{ color: STATUS[proximo.status].cor, background: '#16161A', borderColor: STATUS[proximo.status].cor + '55' }}>
+          <span className="badge" style={{ color: STATUS[proximo.status].cor, background: STATUS[proximo.status].bg }}>
             {STATUS[proximo.status].label.toUpperCase()}
           </span>
         </div>
       ) : (
         <div className="empty-state" style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 30, marginBottom: 8, color: '#D8D6D0' }}>✂</div>
+          <div style={{ fontSize: 30, marginBottom: 8, color: 'var(--border-strong)' }}>✂</div>
           <p style={{ fontSize: 13, marginBottom: 14 }}>Você não tem horários marcados.</p>
           <button className="btn btn-primary" onClick={abrirNovo}>+ AGENDAR AGORA</button>
         </div>
@@ -283,16 +283,16 @@ export default function ClientePage() {
       {/* MODAL DE AGENDAMENTO */}
       {aberto && (
         <div
+          className="modal-overlay"
           onClick={e => { if (e.target === e.currentTarget) setAberto(false) }}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
         >
-          <div style={{ background: '#fff', borderRadius: 8, width: '100%', maxWidth: 560, maxHeight: '92vh', overflowY: 'auto', boxShadow: 'var(--shadow-md)' }}>
-            <div style={{ padding: '18px 22px', borderBottom: '1px solid #F0EEE8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="modal" style={{ maxWidth: 560, maxHeight: '92vh', padding: 0 }}>
+            <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div className="eyebrow">Novo agendamento</div>
                 <div style={{ fontSize: 16, fontWeight: 700 }}>Escolha serviço, dia e horário</div>
               </div>
-              <button onClick={() => setAberto(false)} aria-label="Fechar" style={{ background: 'transparent', border: 'none', fontSize: 22, color: '#9A9890', cursor: 'pointer' }}>×</button>
+              <button onClick={() => setAberto(false)} aria-label="Fechar" style={{ background: 'transparent', border: 'none', fontSize: 22, color: 'var(--faint)', cursor: 'pointer' }}>×</button>
             </div>
 
             <div style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -300,26 +300,26 @@ export default function ClientePage() {
               <div>
                 <label className="field-label">1. Serviços</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {servicosAtivos.length === 0 && <div style={{ fontSize: 12, color: '#9A9890' }}>Nenhum serviço disponível.</div>}
+                  {servicosAtivos.length === 0 && <div style={{ fontSize: 12, color: 'var(--faint)' }}>Nenhum serviço disponível.</div>}
                   {servicosAtivos.map(s => {
                     const sel = form.servicos.includes(s.id)
                     return (
                       <div key={s.id} onClick={() => toggleServico(s.id)} role="checkbox" aria-checked={sel} tabIndex={0}
                         onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleServico(s.id) } }}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 4, cursor: 'pointer', background: sel ? 'rgba(184,134,11,0.08)' : '#FAFAF7', border: `1px solid ${sel ? '#B8860B' : '#E4E2DC'}` }}>
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 8, cursor: 'pointer', background: sel ? 'var(--gold-soft)' : 'var(--surface-2)', border: `1px solid ${sel ? 'var(--gold)' : 'var(--border)'}` }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${sel ? '#B8860B' : '#C0BEB8'}`, background: sel ? '#B8860B' : 'transparent', color: '#fff', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{sel ? '✓' : ''}</div>
+                          <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${sel ? 'var(--gold)' : 'var(--border-strong)'}`, background: sel ? 'var(--gold)' : 'transparent', color: 'var(--on-gold)', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{sel ? '✓' : ''}</div>
                           <span style={{ fontSize: 13, fontWeight: sel ? 600 : 400 }}>{s.nome}</span>
                         </div>
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: '#6A6860' }}>{s.duracao_min} min · {brl(Number(s.preco))}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'var(--muted)' }}>{s.duracao_min} min · {brl(Number(s.preco))}</span>
                       </div>
                     )
                   })}
                 </div>
                 {servicosSel.length > 0 && (
-                  <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#4A4840', background: 'rgba(184,134,11,0.06)', border: '1px solid rgba(184,134,11,0.2)', borderRadius: 4, padding: '8px 12px' }}>
+                  <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)', background: 'var(--gold-soft)', border: '1px solid var(--gold-dark)', borderRadius: 8, padding: '8px 12px' }}>
                     <span>{servicosSel.length} serviço{servicosSel.length > 1 ? 's' : ''} · <strong>{duracaoTotal} min</strong></span>
-                    <strong style={{ fontFamily: "'Space Mono', monospace", color: '#8A6200' }}>{brl(valorTotal)}</strong>
+                    <strong style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--gold)' }}>{brl(valorTotal)}</strong>
                   </div>
                 )}
               </div>
@@ -344,20 +344,20 @@ export default function ClientePage() {
               <div>
                 <label className="field-label">4. Horário</label>
                 {duracaoTotal === 0 || !form.data ? (
-                  <div style={{ fontSize: 12, color: '#9A9890' }}>Escolha o serviço e a data para ver os horários livres.</div>
+                  <div style={{ fontSize: 12, color: 'var(--faint)' }}>Escolha o serviço e a data para ver os horários livres.</div>
                 ) : buscandoHorarios ? (
                   <div style={{ padding: '10px 0' }}><span className="spin" /></div>
                 ) : horarios.length === 0 ? (
-                  <div style={{ fontSize: 12, color: '#B8860B', background: 'rgba(184,134,11,0.06)', border: '1px solid rgba(184,134,11,0.2)', borderRadius: 4, padding: '8px 12px' }}>
+                  <div style={{ fontSize: 12, color: 'var(--warn)', background: 'var(--warn-bg)', border: '1px solid var(--warn)', borderRadius: 8, padding: '8px 12px' }}>
                     Nenhum horário livre neste dia. Tente outra data ou outro barbeiro.
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: 6 }}>
                     {horarios.map(h => (
                       <button key={h} onClick={() => setForm(p => ({ ...p, hora: h }))} style={{
-                        padding: '8px 0', borderRadius: 4, cursor: 'pointer', fontFamily: "'Space Mono', monospace", fontSize: 12,
-                        background: form.hora === h ? '#B8860B' : '#fff', color: form.hora === h ? '#fff' : '#1A1A22',
-                        border: `1px solid ${form.hora === h ? '#B8860B' : '#E4E2DC'}`, fontWeight: form.hora === h ? 700 : 400,
+                        padding: '8px 0', borderRadius: 8, cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontSize: 12,
+                        background: form.hora === h ? 'var(--gold)' : 'var(--surface-2)', color: form.hora === h ? 'var(--on-gold)' : 'var(--text)',
+                        border: `1px solid ${form.hora === h ? 'var(--gold)' : 'var(--border)'}`, fontWeight: form.hora === h ? 700 : 400,
                       }}>{h}</button>
                     ))}
                   </div>
@@ -372,11 +372,11 @@ export default function ClientePage() {
               </div>
 
               {erro && (
-                <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '9px 12px' }}>{erro}</div>
+                <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', fontSize: 12, padding: '9px 12px' }}>{erro}</div>
               )}
             </div>
 
-            <div style={{ padding: '12px 22px 18px', display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid #F0EEE8' }}>
+            <div style={{ padding: '12px 22px 18px', display: 'flex', gap: 8, justifyContent: 'flex-end', borderTop: '1px solid var(--border)' }}>
               <button className="btn" onClick={() => setAberto(false)}>Cancelar</button>
               <button className="btn btn-primary" onClick={agendar} disabled={salvando || !form.hora || form.servicos.length === 0}>
                 {salvando ? 'ENVIANDO...' : 'CONFIRMAR HORÁRIO'}

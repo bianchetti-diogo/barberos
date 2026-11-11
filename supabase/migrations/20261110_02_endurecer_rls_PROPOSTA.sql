@@ -1,2 +1,0 @@
--- Arquivo substituído: a versão final e aplicada está em 20261110_02_endurecer_rls.sql.
--- Este arquivo pode ser apagado (git rm).

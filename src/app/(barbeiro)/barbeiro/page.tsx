@@ -21,12 +21,12 @@ interface Agendamento {
 }
 
 const STATUS: Record<Status, { label: string; cor: string; bg: string }> = {
-  pendente:       { label: 'Pendente',       cor: '#B8860B', bg: 'rgba(184,134,11,0.10)' },
-  confirmado:     { label: 'Confirmado',     cor: '#0369A1', bg: 'rgba(3,105,161,0.10)' },
-  em_atendimento: { label: 'Em atendimento', cor: '#7C3AED', bg: 'rgba(124,58,237,0.10)' },
-  concluido:      { label: 'Concluído',      cor: '#16A34A', bg: 'rgba(22,163,74,0.10)' },
-  cancelado:      { label: 'Cancelado',      cor: '#9A9890', bg: 'rgba(154,152,144,0.10)' },
-  faltou:         { label: 'Faltou',         cor: '#DC2626', bg: 'rgba(220,38,38,0.08)' },
+  pendente:       { label: 'Pendente',       cor: 'var(--warn)',   bg: 'var(--warn-bg)' },
+  confirmado:     { label: 'Confirmado',     cor: 'var(--info)',   bg: 'var(--info-bg)' },
+  em_atendimento: { label: 'Em atendimento', cor: 'var(--gold)',   bg: 'var(--gold-soft)' },
+  concluido:      { label: 'Concluído',      cor: 'var(--ok)',     bg: 'var(--ok-bg)' },
+  cancelado:      { label: 'Cancelado',      cor: 'var(--danger)', bg: 'var(--danger-bg)' },
+  faltou:         { label: 'Faltou',         cor: 'var(--danger)', bg: 'var(--danger-bg)' },
 }
 
 // Próximas ações possíveis a partir de cada status
@@ -152,8 +152,8 @@ export default function BarbeiroPage() {
     return (
       <div className="empty-state">
         <div style={{ fontSize: 32, marginBottom: 10 }}>✂</div>
-        <p style={{ fontSize: 14, color: '#4A4840', marginBottom: 6 }}>Seu usuário ainda não está vinculado a um barbeiro.</p>
-        <p style={{ fontSize: 12 }}>Peça à gestão para cadastrar você em Barbeiros, ou volte para o <Link href="/gestao" style={{ color: '#B8860B', fontWeight: 600 }}>painel de gestão</Link>.</p>
+        <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 6 }}>Seu usuário ainda não está vinculado a um barbeiro.</p>
+        <p style={{ fontSize: 12 }}>Peça à gestão para cadastrar você em Barbeiros, ou volte para o <Link href="/gestao" style={{ color: 'var(--gold)', fontWeight: 600 }}>painel de gestão</Link>.</p>
       </div>
     )
   }
@@ -181,15 +181,15 @@ export default function BarbeiroPage() {
           return (
             <button key={s.chave} onClick={() => setDia(s.d)} style={{
               padding: '10px 4px', borderRadius: 6, cursor: 'pointer', textAlign: 'center',
-              background: sel ? '#0A0A0C' : '#fff',
-              border: `1px solid ${sel ? '#0A0A0C' : ehHoje ? '#B8860B' : '#E4E2DC'}`,
-              color: sel ? '#fff' : '#1A1A22',
+              background: sel ? 'var(--gold-soft)' : 'var(--surface)',
+              border: `1px solid ${sel || ehHoje ? 'var(--gold)' : 'var(--border)'}`,
+              color: 'var(--text)',
             }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: sel ? '#B8860B' : '#9A9890' }}>
+              <div style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: sel ? 'var(--gold)' : 'var(--faint)' }}>
                 {s.d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
               </div>
               <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.3 }}>{s.d.getDate()}</div>
-              <div style={{ fontSize: 10, color: sel ? '#C8C8D0' : s.qtd > 0 ? '#B8860B' : '#C0BEB8' }}>
+              <div style={{ fontSize: 10, color: sel ? 'var(--muted)' : s.qtd > 0 ? 'var(--gold)' : 'var(--faint)' }}>
                 {s.qtd > 0 ? `${s.qtd} cliente${s.qtd === 1 ? '' : 's'}` : '—'}
               </div>
             </button>
@@ -201,12 +201,12 @@ export default function BarbeiroPage() {
       <div className="stat-grid">
         <div className="stat-card"><div className="stat-label">Atendimentos</div><div className="stat-value">{ativos.length}</div></div>
         <div className="stat-card"><div className="stat-label">Concluídos</div><div className="stat-value">{concluidos.length}</div></div>
-        <div className="stat-card"><div className="stat-label">Faturado</div><div className="stat-value" style={{ fontSize: 20, color: '#16A34A' }}>{brl(faturado)}</div></div>
-        <div className="stat-card"><div className="stat-label">A receber</div><div className="stat-value" style={{ fontSize: 20, color: '#B8860B' }}>{brl(aReceber)}</div></div>
+        <div className="stat-card"><div className="stat-label">Faturado</div><div className="stat-value" style={{ fontSize: 20, color: 'var(--ok)' }}>{brl(faturado)}</div></div>
+        <div className="stat-card"><div className="stat-label">A receber</div><div className="stat-value" style={{ fontSize: 20, color: 'var(--gold)' }}>{brl(aReceber)}</div></div>
       </div>
 
       {erro && (
-        <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>{erro}</div>
+        <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>{erro}</div>
       )}
 
       {/* LISTA DO DIA */}
@@ -214,7 +214,7 @@ export default function BarbeiroPage() {
         <div style={{ textAlign: 'center', padding: '48px 0' }}><span className="spin" /></div>
       ) : doDia.length === 0 ? (
         <div className="empty-state">
-          <div style={{ fontSize: 32, marginBottom: 10, color: '#D8D6D0' }}>▦</div>
+          <div style={{ fontSize: 32, marginBottom: 10, color: 'var(--border-strong)' }}>▦</div>
           <p style={{ fontSize: 13 }}>Nenhum atendimento neste dia.</p>
         </div>
       ) : (
@@ -229,35 +229,35 @@ export default function BarbeiroPage() {
                 borderLeft: `4px solid ${st.cor}`,
                 padding: '14px 18px',
                 opacity: a.status === 'cancelado' || a.status === 'faltou' ? 0.65 : 1,
-                boxShadow: ehProximo ? '0 0 0 2px rgba(184,134,11,0.35), var(--shadow-sm)' : undefined,
+                boxShadow: ehProximo ? '0 0 0 1px var(--gold), 0 0 0 4px var(--gold-soft)' : undefined,
               }}>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
                   <div style={{ minWidth: 64 }}>
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, fontWeight: 700, color: '#1A1A22' }}>
+                    <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>
                       {inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
-                    <div style={{ fontSize: 10, color: '#9A9890' }}>até {fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div style={{ fontSize: 10, color: 'var(--faint)' }}>até {fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
 
                   <div style={{ flex: 1, minWidth: 180 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1A22' }}>{a.cliente?.nome || 'Cliente'}</span>
-                      <span className="badge" style={{ color: st.cor, background: st.bg, borderColor: st.cor + '33' }}>{st.label.toUpperCase()}</span>
-                      {ehProximo && <span className="badge" style={{ color: '#fff', background: '#B8860B' }}>PRÓXIMO</span>}
+                      <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{a.cliente?.nome || 'Cliente'}</span>
+                      <span className="badge" style={{ color: st.cor, background: st.bg }}>{st.label.toUpperCase()}</span>
+                      {ehProximo && <span className="badge" style={{ color: 'var(--on-gold)', background: 'var(--gold)' }}>PRÓXIMO</span>}
                     </div>
-                    <div style={{ fontSize: 12, color: '#6A6860', marginTop: 3 }}>{nomesServicos(a)}</div>
-                    {a.cliente?.telefone && <div style={{ fontSize: 11, color: '#9A9890', marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{a.cliente.telefone}</div>}
-                    {a.observacoes && <div style={{ fontSize: 11, color: '#6A6860', marginTop: 6, background: '#FAFAF7', border: '1px solid #EEECE6', borderRadius: 4, padding: '5px 8px' }}>{a.observacoes}</div>}
+                    <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>{nomesServicos(a)}</div>
+                    {a.cliente?.telefone && <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{a.cliente.telefone}</div>}
+                    {a.observacoes && <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 6, padding: '5px 8px' }}>{a.observacoes}</div>}
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 15, fontWeight: 700, color: a.status === 'concluido' ? '#16A34A' : '#1A1A22' }}>{brl(valorDe(a))}</div>
-                    <div style={{ fontSize: 10, color: '#9A9890' }}>{a.duracao_min} min{a.tem_desconto ? ' · desconto' : ''}</div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums', fontSize: 15, fontWeight: 700, color: a.status === 'concluido' ? 'var(--ok)' : 'var(--text)' }}>{brl(valorDe(a))}</div>
+                    <div style={{ fontSize: 10, color: 'var(--faint)' }}>{a.duracao_min} min{a.tem_desconto ? ' · desconto' : ''}</div>
                   </div>
                 </div>
 
                 {ACOES[a.status].length > 0 && (
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12, paddingTop: 12, borderTop: '1px solid #F0EEE8' }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                     {ACOES[a.status].map(ac => (
                       <button
                         key={ac.para}

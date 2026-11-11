@@ -16,16 +16,16 @@ interface Servico {
 }
 
 const CATEGORIAS = [
-  { value: 'base',      label: 'Base',      cor: '#0369A1', bg: 'rgba(3,105,161,0.08)',   border: 'rgba(3,105,161,0.2)' },
-  { value: 'extra',     label: 'Extra',     cor: '#7C3AED', bg: 'rgba(124,58,237,0.08)',  border: 'rgba(124,58,237,0.2)' },
-  { value: 'marketing', label: 'Marketing', cor: '#B8860B', bg: 'rgba(184,134,11,0.08)',  border: 'rgba(184,134,11,0.2)' },
-  { value: 'outro',     label: 'Outro',     cor: '#6A6860', bg: 'rgba(106,104,96,0.08)',  border: 'rgba(106,104,96,0.2)' },
+  { value: 'base',      label: 'Base',      cor: 'var(--teal)',  bg: 'var(--teal-bg)',   border: 'var(--teal)' },
+  { value: 'extra',     label: 'Extra',     cor: 'var(--gold)',  bg: 'var(--gold-soft)', border: 'var(--gold)' },
+  { value: 'marketing', label: 'Marketing', cor: 'var(--combo)', bg: 'var(--combo-bg)',  border: 'var(--combo)' },
+  { value: 'outro',     label: 'Outro',     cor: 'var(--muted)', bg: 'var(--surface-2)', border: 'var(--border-strong)' },
 ]
 
 function CatBadge({ cat }: { cat: string }) {
   const c = CATEGORIAS.find(c => c.value === cat) || CATEGORIAS[3]
   return (
-    <span style={{ display: 'inline-block', background: c.bg, border: `1px solid ${c.border}`, borderRadius: 2, padding: '2px 8px', fontSize: 10, fontFamily: 'monospace', color: c.cor, letterSpacing: '0.08em' }}>
+    <span style={{ display: 'inline-block', background: c.bg, border: '1px solid transparent', borderRadius: 999, padding: '2px 9px', fontSize: 10, fontWeight: 600, color: c.cor, letterSpacing: '0.06em' }}>
       {c.label.toUpperCase()}
     </span>
   )
@@ -127,20 +127,20 @@ export default function ServicosPage() {
     : servicos.filter(s => s.categoria === filtroCategoria)
 
   const inputS: React.CSSProperties = {
-    padding: '8px 12px', background: '#FAFAF7',
-    border: '1px solid #E0DED8', borderRadius: 3,
-    color: '#1A1A22', fontSize: 13, outline: 'none',
-    fontFamily: "'Space Grotesk', sans-serif", width: '100%', boxSizing: 'border-box',
+    padding: '8px 12px', background: 'var(--input-bg)',
+    border: '1px solid var(--border-strong)', borderRadius: 8,
+    color: 'var(--text)', fontSize: 13, outline: 'none',
+    width: '100%', boxSizing: 'border-box',
   }
   const labelS: React.CSSProperties = {
-    fontFamily: 'monospace', fontSize: 9, color: '#9A9890',
-    letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 5, display: 'block',
+    fontSize: 12, fontWeight: 500, color: 'var(--muted)',
+    marginBottom: 5, display: 'block',
   }
 
   function FormServico({ f, setF, onSalvar, onCancelar, titulo }: any) {
     return (
-      <div style={{ background: '#fff', border: '1px solid #B8860B', borderRadius: 4, padding: '20px', marginBottom: 16 }}>
-        <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em', color: '#B8860B', textTransform: 'uppercase', marginBottom: 16 }}>{titulo}</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--gold)', borderRadius: 'var(--radius-card)', padding: '20px', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 16 }}>{titulo}</div>
 
         {/* Linha 1: Nome + Duração + Preço */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 130px', gap: 12, marginBottom: 12 }}>
@@ -170,11 +170,11 @@ export default function ServicosPage() {
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {CATEGORIAS.map(c => (
               <button key={c.value} onClick={() => setF((p: any) => ({ ...p, categoria: c.value }))} style={{
-                padding: '7px 16px', borderRadius: 3, cursor: 'pointer', fontSize: 12,
-                fontFamily: 'monospace', fontWeight: f.categoria === c.value ? 700 : 400,
-                background: f.categoria === c.value ? c.bg : '#F4F2ED',
-                border: `1px solid ${f.categoria === c.value ? c.cor : '#E4E2DC'}`,
-                color: f.categoria === c.value ? c.cor : '#6A6860',
+                padding: '7px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 12,
+                fontWeight: f.categoria === c.value ? 700 : 400,
+                background: f.categoria === c.value ? c.bg : 'var(--bg)',
+                border: `1px solid ${f.categoria === c.value ? c.cor : 'var(--border)'}`,
+                color: f.categoria === c.value ? c.cor : 'var(--muted)',
                 transition: 'all 0.15s',
               }}>{c.label}</button>
             ))}
@@ -182,55 +182,55 @@ export default function ServicosPage() {
         </div>
 
         {/* Linha 4: Reoferta */}
-        <div style={{ background: '#FAFAF7', border: '1px solid #E4E2DC', borderRadius: 3, padding: '14px 16px', marginBottom: 16 }}>
+        <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 8, padding: '14px 16px', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: f.reofertavel ? 12 : 0 }}>
             <div onClick={() => setF((p: any) => ({ ...p, reofertavel: !p.reofertavel }))} style={{
               width: 36, height: 20, borderRadius: 10, cursor: 'pointer', transition: 'background 0.2s',
-              background: f.reofertavel ? '#B8860B' : '#D0CEC8', position: 'relative', flexShrink: 0,
+              background: f.reofertavel ? 'var(--gold)' : 'var(--border-strong)', position: 'relative', flexShrink: 0,
             }}>
-              <div style={{ position: 'absolute', top: 2, left: f.reofertavel ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+              <div style={{ position: 'absolute', top: 2, left: f.reofertavel ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: 'var(--on-gold)', transition: 'left 0.2s' }} />
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A22' }}>Elegível para reoferta</div>
-              <div style={{ fontSize: 11, color: '#9A9890', marginTop: 1 }}>Histórico aparece no card do agendamento para o barbeiro</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Elegível para reoferta</div>
+              <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 1 }}>Histórico aparece no card do agendamento para o barbeiro</div>
             </div>
           </div>
 
           {f.reofertavel && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, borderTop: '1px solid #E4E2DC' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
               <div style={{ flex: 1 }}>
                 <label style={labelS}>Urgência de reoferta (dias)</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <input style={{ ...inputS, width: 80 }} type="number" min="1" max="365" value={f.dias_urgencia} onChange={e => setF((p: any) => ({ ...p, dias_urgencia: Number(e.target.value) }))} />
-                  <span style={{ fontSize: 12, color: '#6A6860' }}>dias sem fazer = alerta de urgência</span>
+                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>dias sem fazer = alerta de urgência</span>
                 </div>
               </div>
-              <div style={{ background: f.dias_urgencia <= 15 ? 'rgba(220,38,38,0.08)' : f.dias_urgencia <= 30 ? 'rgba(184,134,11,0.08)' : 'rgba(22,163,74,0.08)', border: `1px solid ${f.dias_urgencia <= 15 ? 'rgba(220,38,38,0.2)' : f.dias_urgencia <= 30 ? 'rgba(184,134,11,0.2)' : 'rgba(22,163,74,0.2)'}`, borderRadius: 3, padding: '8px 14px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'monospace', fontSize: 18, fontWeight: 700, color: f.dias_urgencia <= 15 ? '#DC2626' : f.dias_urgencia <= 30 ? '#B8860B' : '#16A34A' }}>{f.dias_urgencia}d</div>
-                <div style={{ fontSize: 9, color: '#9A9890', letterSpacing: '0.1em', textTransform: 'uppercase' }}>urgência</div>
+              <div style={{ background: f.dias_urgencia <= 15 ? 'var(--danger-bg)' : f.dias_urgencia <= 30 ? 'var(--warn-bg)' : 'var(--ok-bg)', border: `1px solid ${f.dias_urgencia <= 15 ? 'var(--danger)' : f.dias_urgencia <= 30 ? 'var(--warn)' : 'var(--ok)'}`, borderRadius: 8, padding: '8px 14px', textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: f.dias_urgencia <= 15 ? 'var(--danger)' : f.dias_urgencia <= 30 ? 'var(--warn)' : 'var(--ok)' }}>{f.dias_urgencia}d</div>
+                <div style={{ fontSize: 9, color: 'var(--faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>urgência</div>
               </div>
             </div>
           )}
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={onSalvar} disabled={salvando} style={{ padding: '8px 20px', background: '#B8860B', color: '#fff', border: 'none', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', fontWeight: 700, cursor: 'pointer' }}>
+          <button className="btn btn-primary" onClick={onSalvar} disabled={salvando}>
             {salvando ? 'SALVANDO...' : 'SALVAR'}
           </button>
-          <button onClick={onCancelar} style={{ padding: '8px 16px', background: '#fff', border: '1px solid #E0DED8', borderRadius: 3, color: '#6A6860', fontSize: 12, cursor: 'pointer' }}>Cancelar</button>
+          <button className="btn" onClick={onCancelar}>Cancelar</button>
         </div>
       </div>
     )
   }
 
   return (
-    <div style={{ background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div>
       <div className="page-header">
         <div>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>Administração</div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>Serviços</h1>
+          <div className="eyebrow">Administração</div>
+          <h1 className="page-title">Serviços</h1>
         </div>
-        <button onClick={() => { setNovoAberto(true); setEditando(null) }} style={{ padding: '9px 20px', background: '#B8860B', color: '#fff', border: 'none', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer' }}>
+        <button className="btn btn-primary" onClick={() => { setNovoAberto(true); setEditando(null) }}>
           + NOVO SERVIÇO
         </button>
       </div>
@@ -245,23 +245,23 @@ export default function ServicosPage() {
             { label: 'Reofertáveis', valor: servicos.filter(s => s.reofertavel).length },
             { label: 'Ticket médio', valor: `R$ ${servicos.length ? (servicos.reduce((a, s) => a + Number(s.preco), 0) / servicos.length).toFixed(0) : 0}` },
           ].map(s => (
-            <div key={s.label} style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '14px 18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontFamily: 'monospace', fontSize: 24, fontWeight: 700, color: '#1A1A22', lineHeight: 1 }}>{s.valor}</div>
+            <div key={s.label} className="stat-card">
+              <div className="stat-label">{s.label}</div>
+              <div className="stat-value">{s.valor}</div>
             </div>
           ))}
         </div>
 
         {/* FILTRO CATEGORIAS */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
-          <button onClick={() => setFiltroCategoria('todas')} style={{ padding: '6px 14px', borderRadius: 3, border: `1px solid ${filtroCategoria === 'todas' ? '#1A1A22' : '#E4E2DC'}`, background: filtroCategoria === 'todas' ? '#1A1A22' : '#fff', color: filtroCategoria === 'todas' ? '#fff' : '#6A6860', fontSize: 11, fontFamily: 'monospace', cursor: 'pointer' }}>
+          <button className={`chip${filtroCategoria === 'todas' ? ' ligado' : ''}`} onClick={() => setFiltroCategoria('todas')}>
             TODAS ({servicos.length})
           </button>
           {CATEGORIAS.map(c => {
             const count = servicos.filter(s => s.categoria === c.value).length
             const ativo = filtroCategoria === c.value
             return (
-              <button key={c.value} onClick={() => setFiltroCategoria(c.value)} style={{ padding: '6px 14px', borderRadius: 3, border: `1px solid ${ativo ? c.cor : '#E4E2DC'}`, background: ativo ? c.bg : '#fff', color: ativo ? c.cor : '#6A6860', fontSize: 11, fontFamily: 'monospace', fontWeight: ativo ? 700 : 400, cursor: 'pointer' }}>
+              <button key={c.value} onClick={() => setFiltroCategoria(c.value)} style={{ padding: '5px 12px', borderRadius: 999, border: `1px solid ${ativo ? c.cor : 'var(--border-strong)'}`, background: ativo ? c.bg : 'transparent', color: ativo ? c.cor : 'var(--muted)', fontSize: 12, fontWeight: ativo ? 700 : 400, cursor: 'pointer' }}>
                 {c.label.toUpperCase()} ({count})
               </button>
             )
@@ -275,42 +275,42 @@ export default function ServicosPage() {
 
         {/* LISTA */}
         {carregando ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#9A9890', fontSize: 13 }}>Carregando...</div>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--faint)', fontSize: 13 }}>Carregando...</div>
         ) : servicosFiltrados.length === 0 ? (
-          <div style={{ background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, padding: '60px 20px', textAlign: 'center' }}>
-            <div style={{ fontSize: 32, color: '#E4E2DC', marginBottom: 12 }}>◈</div>
-            <p style={{ color: '#9A9890', fontSize: 13, marginBottom: 20 }}>Nenhum serviço encontrado.</p>
+          <div className="empty-state">
+            <div style={{ fontSize: 32, color: 'var(--border-strong)', marginBottom: 12 }}>◈</div>
+            <p style={{ color: 'var(--faint)', fontSize: 13, marginBottom: 20 }}>Nenhum serviço encontrado.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 110px 90px 110px 90px', gap: 12, padding: '8px 20px', fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.15em', color: '#9A9890', textTransform: 'uppercase' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 110px 90px 110px 90px', gap: 12, padding: '8px 20px', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', color: 'var(--faint)', textTransform: 'uppercase' }}>
               <div>Nome</div><div>Categoria</div><div>Duração</div><div>Preço</div><div>Reoferta</div><div>Ações</div>
             </div>
 
             {servicosFiltrados.map(s => (
               <div key={s.id}>
                 {editando !== s.id && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 110px 90px 110px 90px', gap: 12, padding: '14px 20px', background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4, alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+                  <div className="card" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 110px 90px 110px 90px', gap: 12, padding: '14px 20px', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1A22' }}>{s.nome}</div>
-                      {s.descricao && <div style={{ fontSize: 11, color: '#9A9890', marginTop: 2 }}>{s.descricao}</div>}
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{s.nome}</div>
+                      {s.descricao && <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 2 }}>{s.descricao}</div>}
                     </div>
                     <div><CatBadge cat={s.categoria || 'base'} /></div>
-                    <div style={{ fontSize: 13, color: '#4A4840', fontFamily: 'monospace' }}>{s.duracao_min} min</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A22', fontFamily: 'monospace' }}>R$ {Number(s.preco).toFixed(2)}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>{s.duracao_min} min</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>R$ {Number(s.preco).toFixed(2)}</div>
                     <div>
                       {s.reofertavel ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                          <span style={{ fontSize: 10, color: s.dias_urgencia && s.dias_urgencia <= 15 ? '#DC2626' : s.dias_urgencia && s.dias_urgencia <= 30 ? '#B8860B' : '#16A34A' }}>●</span>
-                          <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#4A4840' }}>{s.dias_urgencia}d</span>
+                          <span style={{ fontSize: 10, color: s.dias_urgencia && s.dias_urgencia <= 15 ? 'var(--danger)' : s.dias_urgencia && s.dias_urgencia <= 30 ? 'var(--warn)' : 'var(--ok)' }}>●</span>
+                          <span style={{ fontSize: 11, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>{s.dias_urgencia}d</span>
                         </div>
                       ) : (
-                        <span style={{ fontSize: 11, color: '#C0BEB8' }}>—</span>
+                        <span style={{ fontSize: 11, color: 'var(--faint)' }}>—</span>
                       )}
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => abrirEdicao(s)} title="Editar" style={{ padding: '5px 10px', background: 'transparent', border: '1px solid #E4E2DC', borderRadius: 2, color: '#6A6860', fontSize: 11, cursor: 'pointer' }}>✎</button>
-                      <button onClick={() => toggleAtivo(s.id, s.ativo)} title={s.ativo ? 'Desativar' : 'Ativar'} style={{ padding: '5px 10px', background: 'transparent', border: `1px solid ${s.ativo ? 'rgba(239,68,68,0.3)' : 'rgba(22,163,74,0.3)'}`, borderRadius: 2, color: s.ativo ? '#DC2626' : '#16A34A', fontSize: 11, cursor: 'pointer' }}>{s.ativo ? '○' : '●'}</button>
+                      <button className="btn btn-sm" onClick={() => abrirEdicao(s)} title="Editar" style={{ background: 'transparent' }}>✎</button>
+                      <button className="btn btn-sm" onClick={() => toggleAtivo(s.id, s.ativo)} title={s.ativo ? 'Desativar' : 'Ativar'} style={{ background: 'transparent', border: `1px solid ${s.ativo ? 'var(--danger)' : 'var(--ok)'}`, color: s.ativo ? 'var(--danger)' : 'var(--ok)' }}>{s.ativo ? '○' : '●'}</button>
                     </div>
                   </div>
                 )}

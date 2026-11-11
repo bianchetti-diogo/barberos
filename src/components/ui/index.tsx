@@ -38,7 +38,7 @@ export function StatCard({ rotulo, valor, cor }: { rotulo: string; valor: ReactN
 export function EmptyState({ icone = '◌', texto, acao }: { icone?: string; texto: string; acao?: ReactNode }) {
   return (
     <div className="empty-state">
-      <div style={{ fontSize: 32, marginBottom: 10, color: '#D8D6D0' }}>{icone}</div>
+      <div style={{ fontSize: 32, marginBottom: 10, color: 'var(--border-strong)' }}>{icone}</div>
       <p style={{ fontSize: 13, marginBottom: acao ? 16 : 0 }}>{texto}</p>
       {acao}
     </div>

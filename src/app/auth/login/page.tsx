@@ -63,7 +63,7 @@ export default function Login() {
             />
             <button
               type="button" onClick={() => setMostrarSenha(v => !v)}
-              style={{ position: 'absolute', right: 6, top: 6, bottom: 6, padding: '0 10px', background: 'transparent', border: 'none', color: '#9A9890', fontSize: 11, cursor: 'pointer', fontFamily: "'Space Mono', monospace" }}
+              style={{ position: 'absolute', right: 6, top: 6, bottom: 6, padding: '0 10px', background: 'transparent', border: 'none', color: 'var(--faint)', fontSize: 11, cursor: 'pointer' }}
             >
               {mostrarSenha ? 'OCULTAR' : 'VER'}
             </button>
@@ -71,7 +71,7 @@ export default function Login() {
         </div>
 
         {erro && (
-          <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>
+          <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>
             {erro}
           </div>
         )}

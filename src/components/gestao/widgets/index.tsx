@@ -56,8 +56,8 @@ function useDados<T>(carregar: (sb: Supabase) => Promise<T>, inicial: T) {
 
 /* ───────────────────────── blocos visuais ───────────────────────── */
 
-const bg = '#FFFFFF'
-const bgHover = '#FAFAF7'
+const bg = 'var(--surface)'
+const bgHover = 'var(--surface-2)'
 
 function Card({ rota, acento, children }: { rota: string; acento?: string; children: React.ReactNode }) {
   const router = useRouter()
@@ -67,16 +67,16 @@ function Card({ rota, acento, children }: { rota: string; acento?: string; child
       tabIndex={0}
       onClick={() => router.push(rota)}
       onKeyDown={e => { if (e.key === 'Enter') router.push(rota) }}
-      onMouseEnter={e => { e.currentTarget.style.background = bgHover; e.currentTarget.style.borderColor = '#D0CEC8' }}
-      onMouseLeave={e => { e.currentTarget.style.background = bg; e.currentTarget.style.borderColor = '#E4E2DC' }}
+      onMouseEnter={e => { e.currentTarget.style.background = bgHover; e.currentTarget.style.borderColor = 'var(--border-strong)' }}
+      onMouseLeave={e => { e.currentTarget.style.background = bg; e.currentTarget.style.borderColor = 'var(--border)' }}
       style={{
-        background: bg, border: '1px solid #E4E2DC', borderRadius: 6,
+        background: bg, border: '1px solid var(--border)', borderRadius: 'var(--radius-card)',
         padding: '18px 20px', cursor: 'pointer',
         transition: 'background 0.15s, border-color 0.15s',
         height: '100%', display: 'flex', flexDirection: 'column',
         justifyContent: 'space-between', position: 'relative',
         overflow: 'hidden', boxSizing: 'border-box',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        boxShadow: 'var(--shadow-sm)',
       }}
     >
       {acento && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: acento }} />}
@@ -86,34 +86,34 @@ function Card({ rota, acento, children }: { rota: string; acento?: string; child
 }
 
 const eyebrow: React.CSSProperties = {
-  fontFamily: "'Space Mono', monospace", fontSize: 9,
-  letterSpacing: '0.2em', textTransform: 'uppercase',
-  color: '#9A9890', marginBottom: 10,
+  fontSize: 11, fontWeight: 600,
+  letterSpacing: '0.08em', textTransform: 'uppercase',
+  color: 'var(--faint)', marginBottom: 10,
 }
 const bigNum: React.CSSProperties = {
-  fontFamily: "'Space Mono', monospace", fontSize: 30, fontWeight: 700,
-  color: '#1A1A22', lineHeight: 1, letterSpacing: '-0.03em',
+  fontVariantNumeric: 'tabular-nums', fontSize: 30, fontWeight: 700,
+  color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em',
 }
 const medNum: React.CSSProperties = {
-  fontFamily: "'Space Mono', monospace", fontSize: 26, fontWeight: 700,
-  color: '#1A1A22', lineHeight: 1, letterSpacing: '-0.03em',
+  fontVariantNumeric: 'tabular-nums', fontSize: 26, fontWeight: 700,
+  color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.02em',
 }
-const sub: React.CSSProperties = { fontSize: 11, color: '#8A8880', marginTop: 8 }
+const sub: React.CSSProperties = { fontSize: 11, color: 'var(--muted)', marginTop: 8 }
 const link: React.CSSProperties = {
-  fontFamily: "'Space Mono', monospace", fontSize: 9,
-  letterSpacing: '0.15em', color: '#B0AEA8', textTransform: 'uppercase', marginTop: 10,
+  fontSize: 10, fontWeight: 600,
+  letterSpacing: '0.08em', color: 'var(--faint)', textTransform: 'uppercase', marginTop: 10,
 }
 const ghost: React.CSSProperties = {
   position: 'absolute', bottom: 12, right: 14,
-  fontSize: 36, color: '#F0EEE8', fontFamily: 'monospace',
+  fontSize: 36, color: 'var(--border)',
   lineHeight: 1, userSelect: 'none', pointerEvents: 'none',
 }
 
 function Vazio({ icone, texto }: { icone: string; texto: string }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '8px 0' }}>
-      <span style={{ fontSize: 28, color: '#E4E2DC' }}>{icone}</span>
-      <span style={{ fontSize: 12, color: '#8A8880', textAlign: 'center', lineHeight: 1.6 }}>{texto}</span>
+      <span style={{ fontSize: 28, color: 'var(--border-strong)' }}>{icone}</span>
+      <span style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>{texto}</span>
     </div>
   )
 }
@@ -127,8 +127,8 @@ function Carregando() {
 }
 
 const STATUS_COR: Record<string, string> = {
-  pendente: '#B8860B', confirmado: '#0369A1', em_atendimento: '#7C3AED',
-  concluido: '#16A34A', cancelado: '#9A9890', faltou: '#DC2626',
+  pendente: 'var(--gold)', confirmado: 'var(--info)', em_atendimento: 'var(--combo)',
+  concluido: 'var(--ok)', cancelado: 'var(--faint)', faltou: 'var(--danger)',
 }
 
 /* ───────────────────────── widgets ───────────────────────── */
@@ -150,7 +150,7 @@ export function WidgetFaturamentoMes() {
   }, { realizado: 0, previsto: 0, qtd: 0 })
 
   return (
-    <Card rota="/gestao/financeiro" acento="#B8860B">
+    <Card rota="/gestao/financeiro" acento="var(--gold)">
       <div>
         <div style={eyebrow}>Faturamento do Mês</div>
         <div style={bigNum}>{carregando ? '—' : brl(dados.realizado)}</div>
@@ -177,7 +177,7 @@ export function WidgetAtendimentosHoje() {
   }, { total: 0, feitos: 0 })
 
   return (
-    <Card rota="/gestao/agenda" acento="#B8860B">
+    <Card rota="/gestao/agenda" acento="var(--gold)">
       <div>
         <div style={eyebrow}>Atendimentos Hoje</div>
         <div style={medNum}>{carregando ? '—' : dados.total}</div>
@@ -205,7 +205,7 @@ export function WidgetTicketMedio() {
   }, { media: 0, qtd: 0 })
 
   return (
-    <Card rota="/gestao/financeiro" acento="#3B82F6">
+    <Card rota="/gestao/financeiro" acento="var(--chart-anterior)">
       <div>
         <div style={eyebrow}>Ticket Médio</div>
         <div style={medNum}>{carregando ? '—' : brl(dados.media)}</div>
@@ -235,12 +235,12 @@ export function WidgetTaxaOcupacao() {
   }, { pct: 0, barbeiros: 0 })
 
   return (
-    <Card rota="/gestao/agenda" acento="#2ECC71">
+    <Card rota="/gestao/agenda" acento="var(--ok)">
       <div>
         <div style={eyebrow}>Ocupação Hoje</div>
         <div style={medNum}>{carregando ? '—' : `${dados.pct}%`}</div>
-        <div style={{ height: 5, background: '#F0EEE8', borderRadius: 3, marginTop: 10, overflow: 'hidden' }}>
-          <div style={{ width: `${dados.pct}%`, height: '100%', background: dados.pct >= 80 ? '#16A34A' : dados.pct >= 40 ? '#B8860B' : '#9A9890', transition: 'width 0.4s' }} />
+        <div style={{ height: 5, background: 'var(--input-bg)', borderRadius: 3, marginTop: 10, overflow: 'hidden' }}>
+          <div style={{ width: `${dados.pct}%`, height: '100%', background: dados.pct >= 80 ? 'var(--ok)' : dados.pct >= 40 ? 'var(--gold)' : 'var(--faint)', transition: 'width 0.4s' }} />
         </div>
       </div>
       <div style={link}>→ Agenda</div>
@@ -262,7 +262,7 @@ export function WidgetProximosAgendamentos() {
   }, [] as any[])
 
   return (
-    <Card rota="/gestao/agenda" acento="#8B5CF6">
+    <Card rota="/gestao/agenda" acento="var(--combo)">
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div style={eyebrow}>Próximos Agendamentos</div>
         {carregando ? <Carregando /> : dados.length === 0 ? (
@@ -270,15 +270,15 @@ export function WidgetProximosAgendamentos() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {dados.map(a => (
-              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', background: '#FAFAF7', border: '1px solid #EEECE6', borderLeft: `3px solid ${STATUS_COR[a.status] || '#9A9890'}`, borderRadius: 4 }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700, color: '#1A1A22', width: 44 }}>
+              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', background: 'var(--surface-2)', border: '1px solid var(--border)', borderLeft: `3px solid ${STATUS_COR[a.status] || 'var(--faint)'}`, borderRadius: 6 }}>
+                <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 12, fontWeight: 700, color: 'var(--text)', width: 44 }}>
                   {new Date(a.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1A22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.cliente?.nome || 'Cliente'}</div>
-                  <div style={{ fontSize: 10, color: '#9A9890', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.servico?.nome || '—'}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.cliente?.nome || 'Cliente'}</div>
+                  <div style={{ fontSize: 10, color: 'var(--faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.servico?.nome || '—'}</div>
                 </div>
-                <span style={{ fontSize: 10, color: '#6A6860' }}>✂ {a.barbeiro?.nome || '—'}</span>
+                <span style={{ fontSize: 10, color: 'var(--muted)' }}>✂ {a.barbeiro?.nome || '—'}</span>
               </div>
             ))}
           </div>
@@ -311,7 +311,7 @@ export function WidgetTopBarbeiros() {
   const maior = dados[0]?.total || 1
 
   return (
-    <Card rota="/gestao/financeiro" acento="#B8860B">
+    <Card rota="/gestao/financeiro" acento="var(--gold)">
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div style={eyebrow}>Top Barbeiros · Mês</div>
         {carregando ? <Carregando /> : dados.length === 0 ? (
@@ -321,11 +321,11 @@ export function WidgetTopBarbeiros() {
             {dados.map((b, i) => (
               <div key={b.nome + i}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
-                  <span style={{ fontWeight: 600, color: '#1A1A22' }}>{i + 1}. {b.nome}</span>
-                  <span style={{ fontFamily: "'Space Mono', monospace", color: '#6A6860' }}>{brl(b.total)} · {b.qtd}</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text)' }}>{i + 1}. {b.nome}</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--muted)' }}>{brl(b.total)} · {b.qtd}</span>
                 </div>
-                <div style={{ height: 4, background: '#F0EEE8', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ width: `${(b.total / maior) * 100}%`, height: '100%', background: '#B8860B' }} />
+                <div style={{ height: 4, background: 'var(--input-bg)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: `${(b.total / maior) * 100}%`, height: '100%', background: 'var(--gold)' }} />
                 </div>
               </div>
             ))}
@@ -347,7 +347,7 @@ export function WidgetNovosClientes() {
   }, 0)
 
   return (
-    <Card rota="/gestao/clientes" acento="#06B6D4">
+    <Card rota="/gestao/clientes" acento="var(--teal)">
       <div>
         <div style={eyebrow}>Novos Clientes</div>
         <div style={medNum}>{carregando ? '—' : dados}</div>
@@ -371,24 +371,24 @@ export function WidgetAlertas() {
   }, { produtos: [] as { nome: string; estoque: number }[], pendentes: 0 })
 
   const alertas: { cor: string; texto: string }[] = []
-  if (dados.pendentes > 0) alertas.push({ cor: '#B8860B', texto: `${dados.pendentes} agendamento${dados.pendentes === 1 ? '' : 's'} de hoje aguardando confirmação` })
+  if (dados.pendentes > 0) alertas.push({ cor: 'var(--gold)', texto: `${dados.pendentes} agendamento${dados.pendentes === 1 ? '' : 's'} de hoje aguardando confirmação` })
   dados.produtos.forEach(p => alertas.push({
-    cor: p.estoque === 0 ? '#DC2626' : '#D97706',
+    cor: p.estoque === 0 ? 'var(--danger)' : 'var(--warn)',
     texto: p.estoque === 0 ? `${p.nome}: sem estoque` : `${p.nome}: estoque baixo (${p.estoque} un)`,
   }))
 
   return (
-    <Card rota="/gestao/produtos" acento="#EF4444">
+    <Card rota="/gestao/produtos" acento="var(--danger)">
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div style={eyebrow}>Alertas</div>
         {carregando ? <Carregando /> : alertas.length === 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-            <span style={{ background: 'rgba(46,204,113,0.08)', border: '1px solid rgba(46,204,113,0.25)', borderRadius: 3, padding: '5px 10px', fontSize: 11, color: '#16A34A', fontFamily: "'Space Mono', monospace" }}>✓ Tudo em ordem</span>
+            <span className="tag tag-ok">✓ Tudo em ordem</span>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {alertas.map((a, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#4A4840' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--muted)' }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: a.cor, flexShrink: 0 }} />
                 {a.texto}
               </div>

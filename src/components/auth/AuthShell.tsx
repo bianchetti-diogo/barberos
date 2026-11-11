@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LogoBarberOS from '@/components/brand/LogoBarberOS'
 
 interface Props {
   titulo: string
@@ -16,31 +17,28 @@ export default function AuthShell({ titulo, subtitulo, children, rodape }: Props
       alignItems: 'center',
       justifyContent: 'center',
       padding: 20,
-      background: 'radial-gradient(circle at 20% 0%, rgba(184,134,11,0.12), transparent 45%), radial-gradient(circle at 100% 100%, rgba(10,10,12,0.08), transparent 40%), #F4F2ED',
+      background: 'var(--bg)',
     }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{
-            width: 52, height: 52, margin: '0 auto 12px', borderRadius: 10,
-            background: '#0A0A0C', color: '#B8860B', fontSize: 24,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 20px rgba(10,10,12,0.25)',
-          }}>✂</div>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: '#B8860B', letterSpacing: '0.14em' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <LogoBarberOS tamanho={64} />
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.14em' }}>
             BARBEROS
           </div>
         </div>
 
-        <div className="card" style={{ padding: '32px 32px 28px', boxShadow: '0 12px 40px rgba(26,26,34,0.08)' }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>{titulo}</h1>
-          <p style={{ color: '#9A9890', fontSize: 13, margin: '4px 0 24px' }}>{subtitulo}</p>
+        <div className="card" style={{ padding: '32px 32px 28px', background: 'var(--surface)', boxShadow: 'var(--shadow-md)' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)' }}>{titulo}</h1>
+          <p style={{ color: 'var(--faint)', fontSize: 13, margin: '4px 0 24px' }}>{subtitulo}</p>
           {children}
         </div>
 
         {rodape && (
-          <p style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#6A6860' }}>
+          <p style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: 'var(--muted)' }}>
             {rodape.texto}{' '}
-            <Link href={rodape.href} style={{ color: '#B8860B', fontWeight: 600 }}>{rodape.linkTexto}</Link>
+            <Link href={rodape.href} style={{ color: 'var(--gold)', fontWeight: 600 }}>{rodape.linkTexto}</Link>
           </p>
         )}
       </div>

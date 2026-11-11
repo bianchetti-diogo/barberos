@@ -85,7 +85,7 @@ export default function Cadastro() {
         </div>
 
         {erro && (
-          <div role="alert" style={{ background: 'rgba(220,38,38,0.07)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 4, color: '#DC2626', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>
+          <div role="alert" style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', fontSize: 12, padding: '9px 12px', marginBottom: 16 }}>
             {erro}
           </div>
         )}

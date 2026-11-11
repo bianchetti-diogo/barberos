@@ -67,36 +67,34 @@ export default function ConfiguracoesPage() {
   }
 
   const inputS: React.CSSProperties = {
-    padding: '9px 12px', background: '#FAFAF7', border: '1px solid #E0DED8',
-    borderRadius: 3, color: '#1A1A22', fontSize: 13, outline: 'none',
-    fontFamily: "'Space Grotesk', sans-serif", width: '100%', boxSizing: 'border-box',
+    padding: '9px 12px', background: 'var(--input-bg)', border: '1px solid var(--border-strong)',
+    borderRadius: 8, color: 'var(--text)', fontSize: 13, outline: 'none',
+    width: '100%', boxSizing: 'border-box',
   }
   const labelS: React.CSSProperties = {
-    fontFamily: 'monospace', fontSize: 9, letterSpacing: '0.15em',
-    color: '#9A9890', textTransform: 'uppercase', display: 'block', marginBottom: 5,
+    fontSize: 12, fontWeight: 500, color: 'var(--muted)', display: 'block', marginBottom: 5,
   }
   const cardS: React.CSSProperties = {
-    background: '#fff', border: '1px solid #E4E2DC', borderRadius: 4,
     padding: '24px', marginBottom: 16,
   }
   const cardTitle: React.CSSProperties = {
-    fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.15em',
-    color: '#9A9890', textTransform: 'uppercase', marginBottom: 20,
+    fontSize: 12, fontWeight: 600, letterSpacing: '0.08em',
+    color: 'var(--faint)', textTransform: 'uppercase', marginBottom: 20,
   }
 
-  if (!barbearia) return <div style={{ padding: 40, color: '#9A9890', fontSize: 13 }}>Carregando...</div>
+  if (!barbearia) return <div style={{ padding: 40, color: 'var(--faint)', fontSize: 13 }}>Carregando...</div>
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F4F2ED', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div className="page-header">
         <div>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: '#9A9890', textTransform: 'uppercase', marginBottom: 2 }}>Administração</div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: '#1A1A22' }}>Configurações</h1>
+          <div className="eyebrow">Administração</div>
+          <h1 className="page-title">Configurações</h1>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {salvo && <span style={{ fontSize: 12, color: '#16A34A', fontFamily: 'monospace' }}>✓ Salvo</span>}
-          <button onClick={salvar} disabled={salvando} style={{ padding: '9px 20px', background: salvando ? '#C0BEB8' : '#B8860B', color: '#fff', border: 'none', borderRadius: 3, fontSize: 12, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.08em', cursor: salvando ? 'not-allowed' : 'pointer' }}>
-            {salvando ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+          {salvo && <span style={{ fontSize: 12, color: 'var(--ok)' }}>✓ Salvo</span>}
+          <button className="btn btn-primary" onClick={salvar} disabled={salvando}>
+            {salvando ? 'Salvando...' : 'Salvar alterações'}
           </button>
         </div>
       </div>
@@ -104,23 +102,23 @@ export default function ConfiguracoesPage() {
       <div className="page-body" style={{ maxWidth: 760 }}>
 
         {/* IDENTIDADE */}
-        <div style={cardS}>
+        <div className="card" style={cardS}>
           <div style={cardTitle}>Identidade Visual</div>
           <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-            <div onClick={() => fileRef.current?.click()} style={{ width: 80, height: 80, borderRadius: 4, background: logo ? 'transparent' : '#F4F2ED', border: '2px dashed #E0DED8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}>
-              {logo ? <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 24, color: '#C0BEB8' }}>+</span>}
+            <div onClick={() => fileRef.current?.click()} style={{ width: 80, height: 80, borderRadius: 8, background: logo ? 'transparent' : 'var(--bg)', border: '2px dashed var(--border-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', flexShrink: 0 }}>
+              {logo ? <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 24, color: 'var(--faint)' }}>+</span>}
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
             <div style={{ flex: 1 }}>
               <label style={labelS}>Nome da Barbearia</label>
               <input style={inputS} value={barbearia.nome || ''} onChange={e => setBarbearia((p: any) => ({...p, nome: e.target.value}))} placeholder="Nome da sua barbearia" />
-              <p style={{ fontSize: 11, color: '#9A9890', marginTop: 6 }}>Clique na imagem para trocar a logo. Aparece na sidebar.</p>
+              <p style={{ fontSize: 11, color: 'var(--faint)', marginTop: 6 }}>Clique na imagem para trocar a logo. Aparece na sidebar.</p>
             </div>
           </div>
         </div>
 
         {/* CONTATO */}
-        <div style={cardS}>
+        <div className="card" style={cardS}>
           <div style={cardTitle}>Contato & Endereço</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div>
@@ -147,7 +145,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* HORÁRIOS */}
-        <div style={cardS}>
+        <div className="card" style={cardS}>
           <div style={cardTitle}>Horários de Funcionamento</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 20 }}>
             <div>
@@ -171,7 +169,7 @@ export default function ConfiguracoesPage() {
               {DIAS.map(d => {
                 const ativo = (config?.dias_funcionamento || []).includes(d.key)
                 return (
-                  <button key={d.key} onClick={() => toggleDia(d.key)} style={{ padding: '7px 14px', background: ativo ? 'rgba(184,134,11,0.1)' : '#F4F2ED', border: `1px solid ${ativo ? '#B8860B' : '#E4E2DC'}`, borderRadius: 3, cursor: 'pointer', color: ativo ? '#8A6200' : '#4A4840', fontSize: 12, transition: 'all 0.15s' }}>
+                  <button key={d.key} onClick={() => toggleDia(d.key)} style={{ padding: '7px 14px', background: ativo ? 'var(--gold-soft)' : 'var(--bg)', border: `1px solid ${ativo ? 'var(--gold)' : 'var(--border)'}`, borderRadius: 8, cursor: 'pointer', color: ativo ? 'var(--gold)' : 'var(--muted)', fontSize: 12, transition: 'all 0.15s' }}>
                     {ativo ? '✓ ' : ''}{d.label}
                   </button>
                 )
@@ -181,7 +179,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* REGRAS */}
-        <div style={cardS}>
+        <div className="card" style={cardS}>
           <div style={cardTitle}>Regras de Agendamento</div>
           <div style={{ maxWidth: 300 }}>
             <label style={labelS}>Prazo mínimo para cancelamento</label>
