@@ -67,6 +67,7 @@ export default function GruposPage() {
       return
     }
     await supabase.rpc('registrar_auditoria', { p_acao: tem ? 'permissao.remover' : 'permissao.adicionar', p_entidade: 'grupos', p_detalhe: { grupo: grupo.nome, acao } })
+    mostrarAviso('Salvo.')
   }
 
   async function alternarModulo(modulo: string) {
@@ -82,6 +83,7 @@ export default function GruposPage() {
       if (error) setErro(error.message)
     }
     await supabase.rpc('registrar_auditoria', { p_acao: todas ? 'permissao.remover_modulo' : 'permissao.adicionar_modulo', p_entidade: 'grupos', p_detalhe: { grupo: grupo.nome, modulo } })
+    mostrarAviso('Salvo.')
     carregar()
   }
 
@@ -136,7 +138,7 @@ export default function GruposPage() {
       <PageHeader eyebrow="Administração" titulo="Grupos e permissões" />
       <PageBody>
         <p className="section-desc" style={{ marginBottom: 16 }}>
-          Cada grupo define o que as pessoas veem e fazem. Marque as caixinhas e a mudança vale na hora. O grupo Administrador sempre tem acesso total.
+          Cada grupo define o que as pessoas veem e fazem. Marque as caixinhas: <strong>cada clique salva sozinho</strong> e vale na hora, sem botão de salvar. O grupo Administrador sempre tem acesso total.
         </p>
         {erro && <div style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger)', color: 'var(--danger)', borderRadius: 10, padding: '10px 14px', fontSize: 13, marginBottom: 14 }}>{erro}</div>}
         {aviso && <div className="toast">{aviso}</div>}
