@@ -389,8 +389,8 @@ export default function AgendaPage() {
   async function salvarNovo(){
     if(!form.cliente_id||!form.data||!form.hora) return
     setSalvando(true)
-    const {data:barb}=await supabase.from('barbearias').select('id').single()
-    await supabase.from('agendamentos').insert({barbearia_id:barb?.id,cliente_id:form.cliente_id||null,barbeiro_id:form.barbeiro_id||null,servico_id:form.servicos_selecionados[0]||null,servicos_ids:form.servicos_selecionados,data_hora:`${form.data}T${form.hora}:00-03:00`,duracao_min:duracaoTotal||30,valor_total:valorTotal,observacoes:form.observacoes||null,status:'pendente'})
+    const {data:barbId}=await supabase.rpc('minha_barbearia')
+    await supabase.from('agendamentos').insert({barbearia_id:barbId,cliente_id:form.cliente_id||null,barbeiro_id:form.barbeiro_id||null,servico_id:form.servicos_selecionados[0]||null,servicos_ids:form.servicos_selecionados,data_hora:`${form.data}T${form.hora}:00-03:00`,duracao_min:duracaoTotal||30,valor_total:valorTotal,observacoes:form.observacoes||null,status:'pendente'})
     setSalvando(false); setModalNovo(null); recarregar()
   }
 

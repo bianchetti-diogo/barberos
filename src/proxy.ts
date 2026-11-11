@@ -93,8 +93,16 @@ export async function proxy(request: NextRequest) {
   if (path === '/') return redirecionar(home)
 
   // ── Proteção das áreas por papel ────────────────────────────
-  if (dentro(path, '/gestao') && role !== 'gestao') return redirecionar(home)
-  if (dentro(path, '/barbeiro') && role !== 'barbeiro' && role !== 'gestao') return redirecionar(home)
+  // O papel (role) continua valendo. Além dele, um grupo pode liberar a área por permissão
+  // (ex.: um líder com papel "barbeiro" que também entra na gestão). Só alarga, nunca restringe.
+  if (dentro(path, '/gestao') && role !== 'gestao') {
+    const { data: liberado } = await supabase.rpc('pode', { p_acao: 'area.gestao' })
+    if (liberado !== true) return redirecionar(home)
+  }
+  if (dentro(path, '/barbeiro') && role !== 'barbeiro' && role !== 'gestao') {
+    const { data: liberado } = await supabase.rpc('pode', { p_acao: 'area.barbeiro' })
+    if (liberado !== true || role === 'cliente') return redirecionar(home)
+  }
   if (dentro(path, '/cliente') && role !== 'cliente' && role !== 'gestao') return redirecionar(home)
 
   // ── Proteção das rotas de API por papel ─────────────────────

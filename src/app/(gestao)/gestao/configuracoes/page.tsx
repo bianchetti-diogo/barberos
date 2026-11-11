@@ -25,7 +25,8 @@ export default function ConfiguracoesPage() {
   useEffect(() => { carregar() }, [])
 
   async function carregar() {
-    const { data: b } = await supabase.from('barbearias').select('*').single()
+    const { data: bid } = await supabase.rpc('minha_barbearia')
+    const { data: b } = await supabase.from('barbearias').select('*').eq('id', bid).single()
     const { data: c } = await supabase.from('configuracoes').select('*').eq('barbearia_id', b?.id).single()
     setBarbearia(b || {})
     setConfig(c || { horario_abertura: '08:00', horario_fechamento: '20:00', intervalo_agendamento: 30, dias_funcionamento: ['seg','ter','qua','qui','sex','sab'], prazo_cancelamento_horas: 2 })

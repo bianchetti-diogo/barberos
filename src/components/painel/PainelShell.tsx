@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { usePermissoes } from '@/lib/permissoes'
 import LogoBarberOS from '@/components/brand/LogoBarberOS'
 import BotaoTema from '@/components/ui/BotaoTema'
 
@@ -21,6 +22,7 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
   const [role, setRole] = useState('')
   const pathname = usePathname()
   const supabase = createClient()
+  const { pode } = usePermissoes()
 
   useEffect(() => {
     async function carregar() {
@@ -72,7 +74,7 @@ export default function PainelShell({ rotulo, nav, children }: Props) {
           </nav>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {role === 'gestao' && (
+            {(role === 'gestao' || pode('area.gestao')) && (
               <Link href="/gestao" className="btn btn-sm">← Gestão</Link>
             )}
             {nome && <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nome}</span>}

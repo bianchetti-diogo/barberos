@@ -16,6 +16,11 @@ const ICONES: Record<string, ReactNode> = {
   sol: (<><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></>),
   lua: (<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></>),
   recolher: (<><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /></>),
+  seguranca: (<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>),
+  cargos: (<><circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" /></>),
+  historico: (<><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>),
+  barbearias: (<><path d="M3 9l1-5h16l1 5" /><path d="M3 9v11h18V9M3 9h18M9 20v-6h6v6" /></>),
+  usuarios: (<><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" /></>),
   filtro: (<><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" /></>),
   grafico: (<><path d="M3 3v18h18" /><path d="m7 14 4-4 4 4 5-6" /></>),
 }

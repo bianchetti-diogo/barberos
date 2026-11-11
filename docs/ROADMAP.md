@@ -100,6 +100,8 @@ Base: `DOSSIE_MODULOS/01_DESIGN_E_LAYOUT.md` e os prints em `DOSSIE_MODULOS/prin
 
 ## FASE 2 — Multi-tenant e Administração
 
+> **Status (10/11/2026):** migração `20261110_03_fase2_base` **aplicada** no Supabase (grupos, permissões, cargos, super admin, auditoria, funções `pode()` etc.). Código pronto, **falta build + teste no Preview**: F2-04, F2-05, F2-06, F2-08, F2-09, F2-12 (parcial: sem interruptores ainda), F2-19, F2-02 (colunas criadas; tela de configurações pendente), cargos (cadastro). Barbearia única "primeira do banco" removida das telas e APIs principais. **Pendentes:** F2-01 (trocar policies antigas `meu_role()` por `pode()` tabela por tabela), F2-03, F2-07 (aposentar `perfis.role`), F2-10, F2-11 (configurações + logo no Storage), F2-13, F2-14 (criar a barbearia de teste pela tela e testar isolamento), F2-15, F2-16, F2-17, F2-18.
+
 - [ ] **F2-01** Auditar todas as tabelas e policies: tudo por `barbearia_id`; nenhuma leitura cruzada.
 - [ ] **F2-02** Tabela `barbearias` ampliada: slug, logo, cores opcionais, fuso, horário de funcionamento, dias fechados, plano, módulos habilitados.
 - [ ] **F2-03** **Configuração por tenant** (`configuracoes` jsonb ou tabela por chave): metas %, base/extra por serviço, serviços acompanhados, frentes, escada de metas, % do pote, equipe/WhatsApp, horários, etc.

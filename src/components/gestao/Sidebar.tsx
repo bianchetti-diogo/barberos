@@ -7,33 +7,45 @@ import { modulosDoPapel, rotaDoModulo } from '@/modules/registry'
 import LogoBarberOS from '@/components/brand/LogoBarberOS'
 import Icon from '@/components/ui/Icon'
 import BotaoTema from '@/components/ui/BotaoTema'
+import { usePermissoes } from '@/lib/permissoes'
 
-interface ItemMenu { id: string; label: string; icon: string; rota: string; ativo: boolean }
+// `perm`: ação do catálogo que libera o item. `soSuper`: só o super admin vê.
+interface ItemMenu { id: string; label: string; icon: string; rota: string; ativo: boolean; perm?: string; soSuper?: boolean }
 interface GrupoMenu { label: string; itens: ItemMenu[] }
 
 const GRUPOS: GrupoMenu[] = [
   {
-    label: 'Administração',
+    label: 'Cadastros',
     itens: [
-      { id: 'dashboard',     label: 'Dashboard',     icon: 'painel',        rota: '/gestao',               ativo: true },
-      { id: 'barbeiros',     label: 'Barbeiros',     icon: 'barbeiros',     rota: '/gestao/barbeiros',     ativo: true },
-      { id: 'servicos',      label: 'Serviços',      icon: 'servicos',      rota: '/gestao/servicos',      ativo: true },
-      { id: 'produtos',      label: 'Produtos',      icon: 'produtos',      rota: '/gestao/produtos',      ativo: true },
-      { id: 'clientes',      label: 'Clientes',      icon: 'clientes',      rota: '/gestao/clientes',      ativo: true },
-      { id: 'configuracoes', label: 'Configurações', icon: 'configuracoes', rota: '/gestao/configuracoes', ativo: true },
+      { id: 'dashboard',     label: 'Dashboard',     icon: 'painel',        rota: '/gestao',               ativo: true, perm: 'dashboard.ver' },
+      { id: 'barbeiros',     label: 'Barbeiros',     icon: 'barbeiros',     rota: '/gestao/barbeiros',     ativo: true, perm: 'barbeiros.ver' },
+      { id: 'servicos',      label: 'Serviços',      icon: 'servicos',      rota: '/gestao/servicos',      ativo: true, perm: 'servicos.ver' },
+      { id: 'produtos',      label: 'Produtos',      icon: 'produtos',      rota: '/gestao/produtos',      ativo: true, perm: 'produtos.ver' },
+      { id: 'clientes',      label: 'Clientes',      icon: 'clientes',      rota: '/gestao/clientes',      ativo: true, perm: 'clientes.ver' },
+      { id: 'configuracoes', label: 'Configurações', icon: 'configuracoes', rota: '/gestao/configuracoes', ativo: true, perm: 'configuracoes.ver' },
     ],
   },
   {
     label: 'Operação',
     itens: [
-      { id: 'agenda', label: 'Agenda', icon: 'agenda', rota: '/gestao/agenda', ativo: true },
+      { id: 'agenda', label: 'Agenda', icon: 'agenda', rota: '/gestao/agenda', ativo: true, perm: 'agenda.ver' },
     ],
   },
   {
     label: 'Financeiro',
     itens: [
-      { id: 'financeiro', label: 'Faturamento', icon: 'financeiro', rota: '/gestao/financeiro', ativo: true },
-      { id: 'relatorios', label: 'Relatórios',  icon: 'relatorios', rota: '/gestao/relatorios', ativo: false },
+      { id: 'financeiro', label: 'Faturamento', icon: 'financeiro', rota: '/gestao/financeiro', ativo: true, perm: 'financeiro.ver' },
+      { id: 'relatorios', label: 'Relatórios',  icon: 'relatorios', rota: '/gestao/relatorios', ativo: false, perm: 'financeiro.ver' },
+    ],
+  },
+  {
+    label: 'Administração',
+    itens: [
+      { id: 'adm-usuarios',   label: 'Usuários',              icon: 'usuarios',   rota: '/gestao/administracao/usuarios',   ativo: true, perm: 'admin.usuarios' },
+      { id: 'adm-grupos',     label: 'Grupos e permissões',   icon: 'seguranca',  rota: '/gestao/administracao/grupos',     ativo: true, perm: 'admin.grupos' },
+      { id: 'adm-cargos',     label: 'Cargos',                icon: 'cargos',     rota: '/gestao/administracao/cargos',     ativo: true, perm: 'admin.cargos' },
+      { id: 'adm-auditoria',  label: 'Histórico',             icon: 'historico',  rota: '/gestao/administracao/auditoria',  ativo: true, perm: 'admin.auditoria' },
+      { id: 'adm-barbearias', label: 'Barbearias',            icon: 'barbearias', rota: '/gestao/administracao/barbearias', ativo: true, soSuper: true },
     ],
   },
 ]
@@ -48,6 +60,7 @@ export default function Sidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
+  const { pode, superAdmin, carregando, barbeariaId } = usePermissoes()
 
   useEffect(() => {
     try {
@@ -55,12 +68,17 @@ export default function Sidebar() {
       const logoSalva = localStorage.getItem('barberos_logo')
       if (logoSalva) setLogo(logoSalva)
     } catch { /* sem armazenamento */ }
-    // O nome da barbearia vem do banco, assim todos os usuários veem o mesmo
-    supabase.from('barbearias').select('nome').limit(1).maybeSingle().then(({ data }) => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // O nome é o da barbearia ativa (para o super admin, a que ele escolheu)
+  useEffect(() => {
+    if (!barbeariaId) return
+    supabase.from('barbearias').select('nome').eq('id', barbeariaId).maybeSingle().then(({ data }) => {
       if (data?.nome) setNome(String(data.nome))
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [barbeariaId])
 
   function alternarRecolhida() {
     const novo = !recolhida
@@ -103,7 +121,15 @@ export default function Sidebar() {
       ativo: m.status !== 'em_breve',
     })
   })
+  // Cada pessoa vê só o que o grupo dela permite (o banco barra o resto de verdade)
+  const visivel = (item: ItemMenu) => {
+    if (item.soSuper) return superAdmin
+    if (!item.perm) return true
+    return !carregando && pode(item.perm)
+  }
   const todosGrupos = [...GRUPOS, ...gruposModulos]
+    .map(g => ({ ...g, itens: g.itens.filter(visivel) }))
+    .filter(g => g.itens.length > 0)
 
   return (
     <aside className={`sidebar${recolhida ? ' recolhida' : ''}`}>

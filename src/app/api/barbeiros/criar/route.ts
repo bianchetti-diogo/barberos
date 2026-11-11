@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdmin } from '@/lib/supabase-admin'
+import { createServerSupabase } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
   const supabaseAdmin = getAdmin()
@@ -37,13 +38,15 @@ export async function POST(request: NextRequest) {
     const userId = authData.user.id
     userIdCriado = userId
 
-    // 2. Buscar barbearia
-    const { data: barbearia } = await supabaseAdmin
-      .from('barbearias')
-      .select('id')
-      .order('criado_em', { ascending: true })
-      .limit(1)
-      .single()
+    // 2. Barbearia de quem está logado (nunca "a primeira do banco")
+    const sessao = await createServerSupabase()
+    const { data: barbeariaId } = await sessao.rpc('minha_barbearia')
+    if (!barbeariaId) throw new Error('Barbearia não encontrada.')
+    const barbearia = { id: barbeariaId as string }
+
+    // Grupo e cargo padrão do barbeiro (editáveis depois em Administração)
+    const { data: grupoBarbeiro } = await supabaseAdmin.from('grupos').select('id').eq('barbearia_id', barbearia.id).eq('nome', 'Barbeiro').maybeSingle()
+    const { data: cargoBarbeiro } = await supabaseAdmin.from('cargos').select('id').eq('barbearia_id', barbearia.id).eq('nome', 'Barbeiro').maybeSingle()
 
     // 3. Criar perfil
     const { error: perfilError } = await supabaseAdmin.from('perfis').insert({
@@ -51,7 +54,8 @@ export async function POST(request: NextRequest) {
       nome,
       telefone: telefone || null,
       role: 'barbeiro',
-      barbearia_id: barbearia?.id || null,
+      barbearia_id: barbearia.id,
+      grupo_id: grupoBarbeiro?.id ?? null,
       ativo: true,
     })
     if (perfilError) throw new Error(perfilError.message)
@@ -79,7 +83,8 @@ export async function POST(request: NextRequest) {
     // 5. Criar barbeiro
     const { error: barbeiroError } = await supabaseAdmin.from('barbeiros').insert({
       perfil_id: userId,
-      barbearia_id: barbearia?.id || null,
+      barbearia_id: barbearia.id,
+      cargo_id: cargoBarbeiro?.id ?? null,
       nome,
       foto_url,
       bio: bio || null,

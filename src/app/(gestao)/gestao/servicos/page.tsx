@@ -99,7 +99,8 @@ export default function ServicosPage() {
   async function salvarNovo() {
     if (!form.nome) return
     setSalvando(true)
-    const { data: barbearia } = await supabase.from('barbearias').select('id').single()
+    const { data: barbeariaId } = await supabase.rpc('minha_barbearia')
+    const barbearia = { id: barbeariaId as string | null }
     await supabase.from('servicos').insert({
       nome: form.nome,
       descricao: form.descricao || null,

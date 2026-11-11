@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdmin } from '@/lib/supabase-admin'
+import { createServerSupabase } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,12 +15,11 @@ export async function POST(request: NextRequest) {
 
     if (!nome) return NextResponse.json({ error: 'Nome obrigatório.' }, { status: 400 })
 
-    const { data: barbearia } = await supabaseAdmin
-      .from('barbearias')
-      .select('id')
-      .order('criado_em', { ascending: true })
-      .limit(1)
-      .single()
+    // A barbearia é a de quem está logado (nunca "a primeira do banco")
+    const sessao = await createServerSupabase()
+    const { data: barbeariaId } = await sessao.rpc('minha_barbearia')
+    if (!barbeariaId) return NextResponse.json({ error: 'Barbearia não encontrada.' }, { status: 400 })
+    const barbearia = { id: barbeariaId as string }
 
     let foto_url: string | null = null
     if (foto && foto.size > 0) {

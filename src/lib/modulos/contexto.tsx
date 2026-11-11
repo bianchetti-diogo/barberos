@@ -44,9 +44,13 @@ export function BarberOSProvider({ children }: { children: React.ReactNode }) {
         .eq('id', user.id)
         .maybeSingle()
 
+      // Barbearia ativa (para o super admin, a que ele escolheu; para os demais, a do perfil)
+      const { data: barbeariaAtiva } = await supabase.rpc('minha_barbearia')
+      const barbeariaId = (barbeariaAtiva as string | null) ?? perfil?.barbearia_id ?? null
+
       const [{ data: barbearia }, { data: barbeiro }] = await Promise.all([
-        perfil?.barbearia_id
-          ? supabase.from('barbearias').select('id, nome').eq('id', perfil.barbearia_id).maybeSingle()
+        barbeariaId
+          ? supabase.from('barbearias').select('id, nome').eq('id', barbeariaId).maybeSingle()
           : Promise.resolve({ data: null }),
         supabase.from('barbeiros').select('id').eq('perfil_id', user.id).maybeSingle(),
       ])
